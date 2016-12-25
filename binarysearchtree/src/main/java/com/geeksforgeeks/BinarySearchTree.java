@@ -10,7 +10,14 @@ import java.util.Stack;
  */
 public class BinarySearchTree<T extends Comparable<T>> {
 
-    public Node<T> root;
+    Node<T> root;
+
+    public BinarySearchTree(Node<T> root) {
+        this.root=root;
+    }
+
+    public BinarySearchTree() {
+    }
 
     public void insert(T dataToInsert) {
         root = insertRecursive(root, dataToInsert);
@@ -156,7 +163,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
     public PredecessorSuccessorDTO<T> findInorderPreSucc(T dataToSearch) {
         PredecessorSuccessorDTO<T> dto = new PredecessorSuccessorDTO<>();
-        findInorderPreSucc(dataToSearch, root,dto);
+        findInorderPreSucc(dataToSearch, root, dto);
         return dto;
     }
 
@@ -177,7 +184,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
      * set the predecessor as root
      * search recursively into right subtree
      */
-    private void findInorderPreSucc(T dataToSearch, Node<T> root,PredecessorSuccessorDTO<T> dto) {
+    private void findInorderPreSucc(T dataToSearch, Node<T> root, PredecessorSuccessorDTO<T> dto) {
 
         if (root == null)
             return;
@@ -203,16 +210,15 @@ public class BinarySearchTree<T extends Comparable<T>> {
                 }
                 dto.successor = prev;
             }
-        }
-        else if (root.data.compareTo(dataToSearch) > 0) {
+        } else if (root.data.compareTo(dataToSearch) > 0) {
             //searching in left subtree, set successor as root
 //            successor = root;
-            dto.successor=root;
-            findInorderPreSucc(dataToSearch, root.left,dto);
+            dto.successor = root;
+            findInorderPreSucc(dataToSearch, root.left, dto);
 
         } else {
             dto.predecessor = root;
-            findInorderPreSucc(dataToSearch, root.right,dto);
+            findInorderPreSucc(dataToSearch, root.right, dto);
         }
 
     }
@@ -303,8 +309,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         node2.data = temp;
     }
 
-    public void swap(Node<T> node1, Node<T> node2)
-    {
+    public void swap(Node<T> node1, Node<T> node2) {
         if (node1 == null || node2 == null)
             throw new IllegalArgumentException("Data not found in tree");
         T temp = node1.data;
@@ -315,41 +320,34 @@ public class BinarySearchTree<T extends Comparable<T>> {
     public void unswap() {
         NodeSwapDTO<T> nodeSwapDTO = new NodeSwapDTO<>();
 
-        parseForUnswap(root,nodeSwapDTO);
-        if(nodeSwapDTO.first!=null&&nodeSwapDTO.last!=null)
-        {
-            swap(nodeSwapDTO.first,nodeSwapDTO.last);
-        }
-        else if(nodeSwapDTO.first!=null&&nodeSwapDTO.middle!=null)
-        {
-            swap(nodeSwapDTO.first,nodeSwapDTO.middle);
+        parseForUnswap(root, nodeSwapDTO);
+        if (nodeSwapDTO.first != null && nodeSwapDTO.last != null) {
+            swap(nodeSwapDTO.first, nodeSwapDTO.last);
+        } else if (nodeSwapDTO.first != null && nodeSwapDTO.middle != null) {
+            swap(nodeSwapDTO.first, nodeSwapDTO.middle);
         }
     }
 
-    private void parseForUnswap(Node<T> root, NodeSwapDTO<T> nodeSwapDTO)
-    {
-        if(root==null)
+    private void parseForUnswap(Node<T> root, NodeSwapDTO<T> nodeSwapDTO) {
+        if (root == null)
             return;
-        parseForUnswap(root.left,nodeSwapDTO);
+        parseForUnswap(root.left, nodeSwapDTO);
 
-        if(nodeSwapDTO.prev!=null&&root.data.compareTo(nodeSwapDTO.prev.data)<0)
-        {
-            if(nodeSwapDTO.first==null)
-            {
-                nodeSwapDTO.first=nodeSwapDTO.prev;
-                nodeSwapDTO.middle=root;
-            }
-            else
-            {
-                nodeSwapDTO.last=root;
+        if (nodeSwapDTO.prev != null && root.data.compareTo(nodeSwapDTO.prev.data) < 0) {
+            if (nodeSwapDTO.first == null) {
+                nodeSwapDTO.first = nodeSwapDTO.prev;
+                nodeSwapDTO.middle = root;
+            } else {
+                nodeSwapDTO.last = root;
             }
         }
-        nodeSwapDTO.prev=root;
-        parseForUnswap(root.right,nodeSwapDTO);
+        nodeSwapDTO.prev = root;
+        parseForUnswap(root.right, nodeSwapDTO);
 
     }
 
-    public static class Node<T> {
+
+    static class Node<T> {
         T data;
         Node<T> left;
         Node<T> right;

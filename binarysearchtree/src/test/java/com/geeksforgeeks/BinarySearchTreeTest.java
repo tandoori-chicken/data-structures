@@ -181,4 +181,32 @@ public class BinarySearchTreeTest {
 
     }
 
+    @Test
+    public void testConstructBSTFromDLL() {
+        DoublyLinkedList<Integer> dll = constructDLL(1, 2, 3);
+        Assert.assertEquals("123", dll.toString());
+
+        dll.constructBST(); //constructs BST in place using next and prev pointers
+        Assert.assertEquals(buildTree(2, 1, 3), dll.mapToBST()); //verifies if this constructed tree is identical to the correct BST
+
+        dll = constructDLL(1, 2, 3, 4, 5, 6, 7);
+        dll.constructBST();
+        Assert.assertEquals(buildTree(4, 2, 6, 1, 3, 5, 7), dll.mapToBST());
+
+        dll = constructDLL(1, 2, 3, 4);
+        dll.constructBST();
+        Assert.assertEquals(buildTree(3, 2, 1, 4), dll.mapToBST());
+
+    }
+
+    private <T extends Comparable<T>> DoublyLinkedList<T> constructDLL(T... inputs) {
+        if (inputs.length == 0)
+            return null;
+
+        DoublyLinkedList<T> dll = new DoublyLinkedList<>();
+        Arrays.stream(inputs).forEach(dll::append);
+        return dll;
+    }
+
+
 }
