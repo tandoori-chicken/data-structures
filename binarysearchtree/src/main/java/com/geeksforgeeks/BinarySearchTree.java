@@ -13,10 +13,50 @@ public class BinarySearchTree<T extends Comparable<T>> {
     Node<T> root;
 
     public BinarySearchTree(Node<T> root) {
-        this.root=root;
+        this.root = root;
     }
 
     public BinarySearchTree() {
+    }
+
+    public static NodePairDTO<Integer> findSumPair(Node<Integer> root, int sum) {
+        Node<Integer> curr1 = root;
+        Node<Integer> curr2 = root;
+        Stack<Node<Integer>> stack1 = new Stack<>();
+        Stack<Node<Integer>> stack2 = new Stack<>();
+
+        while (curr1 != null || curr2 != null || !stack1.isEmpty() || !stack2.isEmpty()) {
+            if (curr1 != null || curr2 != null) {
+                if (curr1 != null) {
+                    stack1.push(curr1);
+                    curr1 = curr1.left;
+                }
+                if (curr2 != null) {
+                    stack2.push(curr2);
+                    curr2 = curr2.right;
+                }
+            } else if (!stack1.isEmpty() && !stack2.isEmpty()) {
+                curr1 = stack1.pop();
+                curr2 = stack2.pop();
+                if (curr1.equals(curr2))
+                    throw new IllegalArgumentException("Sum : " + sum + " not found");
+                Integer currSum = curr1.data + curr2.data;
+                if (currSum < sum) {
+                    //we move to next inorder element from left
+                    curr1 = curr1.right;
+                    stack2.push(curr2);
+                    curr2 = null;
+                } else if (currSum > sum) {
+                    //we move to previous inorder element from right
+                    curr2 = curr2.left;
+                    stack1.push(curr1);
+                    curr1 = null;
+                } else {
+                    return new NodePairDTO<>(curr1, curr2);
+                }
+            }
+        }
+        throw new IllegalArgumentException("Sum : " + sum + " not found");
     }
 
     public void insert(T dataToInsert) {
@@ -345,7 +385,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
         parseForUnswap(root.right, nodeSwapDTO);
 
     }
-
 
     static class Node<T> {
         T data;

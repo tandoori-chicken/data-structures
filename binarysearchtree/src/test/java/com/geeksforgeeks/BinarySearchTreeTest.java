@@ -208,5 +208,39 @@ public class BinarySearchTreeTest {
         return dll;
     }
 
+    @Test
+    public void testSumInBST()
+    {
+        BinarySearchTree<Integer> tree = buildTree(15, 10, 20, 8, 12, 16, 25);
+
+        int sumToSearch = 24;
+        NodePairDTO<Integer> expectedResult = new NodePairDTO<>(tree.searchNode(8),tree.searchNode(16));
+
+        NodePairDTO<Integer> actualResult = BinarySearchTree.findSumPair(tree.root, sumToSearch);
+        Assert.assertEquals(expectedResult.node1,actualResult.node1);
+        Assert.assertEquals(expectedResult.node2, actualResult.node2);
+
+        sumToSearch = 33;
+        expectedResult = new NodePairDTO<>(tree.searchNode(8),tree.searchNode(25));
+        actualResult = BinarySearchTree.findSumPair(tree.root, sumToSearch);
+        Assert.assertEquals(expectedResult.node1,actualResult.node1);
+        Assert.assertEquals(expectedResult.node2, actualResult.node2);
+
+        sumToSearch = 18;
+        expectedResult = new NodePairDTO<>(tree.searchNode(8),tree.searchNode(10));
+        actualResult = BinarySearchTree.findSumPair(tree.root, sumToSearch);
+        Assert.assertEquals(expectedResult.node1,actualResult.node1);
+        Assert.assertEquals(expectedResult.node2, actualResult.node2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSumInBSTError()
+    {
+        BinarySearchTree<Integer> tree = buildTree(15,10,20,8,12,16,25);
+        BinarySearchTree.findSumPair(tree.root, 29);
+    }
+
+
+
 
 }
