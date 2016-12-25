@@ -155,7 +155,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     public PredecessorSuccessorDTO<T> findInorderPreSucc(T dataToSearch) {
-        return findInorderPreSucc(dataToSearch, root);
+        PredecessorSuccessorDTO<T> dto = new PredecessorSuccessorDTO<>();
+        findInorderPreSucc(dataToSearch, root,dto);
+        return dto;
     }
 
     /**
@@ -175,13 +177,10 @@ public class BinarySearchTree<T extends Comparable<T>> {
      * set the predecessor as root
      * search recursively into right subtree
      */
-    private PredecessorSuccessorDTO<T> findInorderPreSucc(T dataToSearch, Node<T> root) {
-        Node<T> predecessor = null;
-        Node<T> successor = null;
-
+    private void findInorderPreSucc(T dataToSearch, Node<T> root,PredecessorSuccessorDTO<T> dto) {
 
         if (root == null)
-            return new PredecessorSuccessorDTO<>(null, null);
+            return;
 
 
         if (root.data.equals(dataToSearch)) {
@@ -193,7 +192,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
                     prev = curr; //keeps track of the result
                     curr = curr.right;
                 }
-                predecessor = prev;
+                dto.predecessor = prev;
             }
             if (root.right != null) {
                 Node<T> curr = root.right;
@@ -202,29 +201,20 @@ public class BinarySearchTree<T extends Comparable<T>> {
                     prev = curr;
                     curr = curr.left;
                 }
-                successor = prev;
+                dto.successor = prev;
             }
-            return new PredecessorSuccessorDTO<>(predecessor, successor);
         }
-        if (root.data.compareTo(dataToSearch) > 0) {
+        else if (root.data.compareTo(dataToSearch) > 0) {
             //searching in left subtree, set successor as root
 //            successor = root;
-            PredecessorSuccessorDTO<T> leftTreeResult = findInorderPreSucc(dataToSearch, root.left);
-            predecessor = leftTreeResult.predecessor;
-            successor = leftTreeResult.successor;
-            if (successor == null)
-                successor = root;
+            dto.successor=root;
+            findInorderPreSucc(dataToSearch, root.left,dto);
 
         } else {
-//            predecessor = root;
-            PredecessorSuccessorDTO<T> rightTreeResult = findInorderPreSucc(dataToSearch, root.right);
-            predecessor = rightTreeResult.predecessor;
-            successor = rightTreeResult.successor;
-            if (predecessor == null)
-                predecessor = root;
-
+            dto.predecessor = root;
+            findInorderPreSucc(dataToSearch, root.right,dto);
         }
-        return new PredecessorSuccessorDTO<>(predecessor, successor);
+
     }
 
     public String merge(BinarySearchTree<T> treeToMerge) {

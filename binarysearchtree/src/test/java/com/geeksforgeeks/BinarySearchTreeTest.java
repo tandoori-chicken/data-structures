@@ -103,7 +103,7 @@ public class BinarySearchTreeTest {
 
         tree = buildBigIntegerTree();
 
-        //for 44, it's 29 and 54
+        //for 44, it's 32 and 54
         result = tree.findInorderPreSucc(44);
 
         Assert.assertEquals(32, result.predecessor.data.longValue());
@@ -163,14 +163,21 @@ public class BinarySearchTreeTest {
     }
 
     @Test
-    public void testUnswapBST()
-    {
-        BinarySearchTree<Integer> tree = buildTree(10,5,8,7,3,15,20,25);
-        Assert.assertEquals("357810152025",tree.traverseInorder());
+    public void testUnswapBST() {
+        BinarySearchTree<Integer> tree = buildTree(10, 5, 8, 7, 3, 15, 20, 25);
+        Assert.assertEquals("357810152025", tree.traverseInorder());
         tree.swap(3, 15);
         Assert.assertEquals("155781032025", tree.traverseInorder());
         tree.unswap();
-        Assert.assertEquals("357810152025",tree.traverseInorder());
+        Assert.assertEquals("357810152025", tree.traverseInorder());
+        tree.swap(15, 10);
+        Assert.assertEquals("357815102025", tree.traverseInorder());
+        tree.unswap();
+        Assert.assertEquals("357810152025", tree.traverseInorder());
+        tree.swap(5, 10);
+        Assert.assertEquals("310785152025", tree.traverseInorder());
+        tree.unswap();
+        Assert.assertEquals("357810152025", tree.traverseInorder());
 
     }
 
