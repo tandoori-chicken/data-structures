@@ -1,8 +1,9 @@
 package com.geeksforgeeks;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.Stack;
+
 
 /**
  * Created by adarsh on 22/12/2016.
@@ -153,7 +154,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         return minValue;
     }
 
-    public MutablePair<Node<T>, Node<T>> findInorderPreSucc(T dataToSearch) {
+    public PredecessorSuccessorDTO<T> findInorderPreSucc(T dataToSearch) {
         return findInorderPreSucc(dataToSearch, root);
     }
 
@@ -174,13 +175,13 @@ public class BinarySearchTree<T extends Comparable<T>> {
      * set the predecessor as root
      * search recursively into right subtree
      */
-    private MutablePair<Node<T>, Node<T>> findInorderPreSucc(T dataToSearch, Node<T> root) {
+    private PredecessorSuccessorDTO<T> findInorderPreSucc(T dataToSearch, Node<T> root) {
         Node<T> predecessor = null;
         Node<T> successor = null;
 
 
         if (root == null)
-            return new MutablePair<>(null, null);
+            return new PredecessorSuccessorDTO<>(null, null);
 
 
         if (root.data.equals(dataToSearch)) {
@@ -203,27 +204,96 @@ public class BinarySearchTree<T extends Comparable<T>> {
                 }
                 successor = prev;
             }
-            return new MutablePair<>(predecessor,successor);
+            return new PredecessorSuccessorDTO<>(predecessor, successor);
         }
         if (root.data.compareTo(dataToSearch) > 0) {
             //searching in left subtree, set successor as root
 //            successor = root;
-            Pair<Node<T>, Node<T>> leftTreeResult = findInorderPreSucc(dataToSearch, root.left);
-            predecessor = leftTreeResult.getLeft();
-            successor = leftTreeResult.getRight();
+            PredecessorSuccessorDTO<T> leftTreeResult = findInorderPreSucc(dataToSearch, root.left);
+            predecessor = leftTreeResult.predecessor;
+            successor = leftTreeResult.successor;
             if (successor == null)
                 successor = root;
 
         } else {
 //            predecessor = root;
-            Pair<Node<T>, Node<T>> rightTreeResult = findInorderPreSucc(dataToSearch, root.right);
-            predecessor = rightTreeResult.getLeft();
-            successor = rightTreeResult.getRight();
+            PredecessorSuccessorDTO<T> rightTreeResult = findInorderPreSucc(dataToSearch, root.right);
+            predecessor = rightTreeResult.predecessor;
+            successor = rightTreeResult.successor;
             if (predecessor == null)
                 predecessor = root;
 
         }
-        return new MutablePair<>(predecessor, successor);
+        return new PredecessorSuccessorDTO<>(predecessor, successor);
+    }
+
+    public String merge(BinarySearchTree<T> treeToMerge) {
+        return merge(this, treeToMerge);
+    }
+
+    private String merge(BinarySearchTree<T> tree1, BinarySearchTree<T> tree2) {
+        if (tree1 == null && tree2 == null)
+            return "";
+
+        if (tree2 == null)
+            return tree1.traverseInorder();
+        if (tree1 == null)
+            return tree2.traverseInorder();
+
+        Stack<Node<T>> stack1 = new Stack<>();
+        Stack<Node<T>> stack2 = new Stack<>();
+
+        Node<T> curr1 = tree1.root;
+        Node<T> curr2 = tree2.root;
+        StringBuilder mergedStringBuilder = new StringBuilder();
+
+        while (curr1 != null || curr2 != null || !stack1.isEmpty() || !stack2.isEmpty()) {
+            if (curr1 != null || curr2 != null) {
+                if (curr1 != null) {
+                    stack1.push(curr1);
+                    curr1 = curr1.left;
+                }
+                if (curr2 != null) {
+                    stack2.push(curr2);
+                    curr2 = curr2.left;
+                }
+            } else {
+                if (stack1.isEmpty()) {
+                    while (!stack2.isEmpty()) {
+                        curr2 = stack2.pop();
+                        curr2.left = null;
+                        mergedStringBuilder.append(traverseInorder(curr2));
+                    }
+                    return mergedStringBuilder.toString();
+                }
+                if (stack2.isEmpty()) {
+                    while (!stack1.isEmpty()) {
+                        curr1 = stack1.pop();
+                        curr1.left = null;
+                        mergedStringBuilder.append(traverseInorder(curr1));
+                    }
+                    return mergedStringBuilder.toString();
+                }
+
+                curr1 = stack1.pop();
+                curr2 = stack2.pop();
+                if (curr1.data.compareTo(curr2.data) < 0) {
+                    mergedStringBuilder.append(curr1.data);
+                    curr1 = curr1.right;
+                    stack2.push(curr2);
+                    curr2 = null;
+                } else {
+                    mergedStringBuilder.append(curr2.data);
+                    curr2 = curr2.right;
+                    stack1.push(curr1);
+                    curr1 = null;
+                }
+
+            }
+        }
+
+        return mergedStringBuilder.toString();
+
     }
 
     public static class Node<T> {
@@ -235,5 +305,6 @@ public class BinarySearchTree<T extends Comparable<T>> {
             this.data = data;
         }
     }
+
 
 }

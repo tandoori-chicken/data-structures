@@ -1,6 +1,5 @@
 package com.geeksforgeeks;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -89,7 +88,7 @@ public class BinarySearchTreeTest {
         tree = buildBigIntegerTree();
         tree.delete(65);
         expectedTree = buildTree(44, 17, 32, 28, 29, 88, 76, 97, 54, 82, 80, 78);
-        Assert.assertEquals(expectedTree,tree);
+        Assert.assertEquals(expectedTree, tree);
     }
 
     @Test
@@ -97,48 +96,70 @@ public class BinarySearchTreeTest {
         BinarySearchTree<Integer> tree = buildTree(50, 30, 70, 20, 40, 60, 80);
 
         //for 65, predecessor is 60, successor is 70
-        Pair<BinarySearchTree.Node<Integer>,BinarySearchTree.Node<Integer>> result =  tree.findInorderPreSucc(65);
+        PredecessorSuccessorDTO<Integer> result = tree.findInorderPreSucc(65);
 
-        Assert.assertEquals(60,result.getLeft().data.longValue());
-        Assert.assertEquals(70,result.getRight().data.longValue());
+        Assert.assertEquals(60, result.predecessor.data.longValue());
+        Assert.assertEquals(70, result.successor.data.longValue());
 
         tree = buildBigIntegerTree();
 
         //for 44, it's 29 and 54
-        result =  tree.findInorderPreSucc(44);
+        result = tree.findInorderPreSucc(44);
 
-        Assert.assertEquals(32,result.getLeft().data.longValue());
-        Assert.assertEquals(54,result.getRight().data.longValue());
+        Assert.assertEquals(32, result.predecessor.data.longValue());
+        Assert.assertEquals(54, result.successor.data.longValue());
 
         //for 47, it's 44 and 54
-        result =  tree.findInorderPreSucc(47);
+        result = tree.findInorderPreSucc(47);
 
-        Assert.assertEquals(44,result.getLeft().data.longValue());
-        Assert.assertEquals(54,result.getRight().data.longValue());
+        Assert.assertEquals(44, result.predecessor.data.longValue());
+        Assert.assertEquals(54, result.successor.data.longValue());
 
         //for 97, it's 88 and null
-        result =  tree.findInorderPreSucc(97);
+        result = tree.findInorderPreSucc(97);
 
-        Assert.assertEquals(88, result.getLeft().data.longValue());
-        Assert.assertNull(result.getRight());
+        Assert.assertEquals(88, result.predecessor.data.longValue());
+        Assert.assertNull(result.successor);
 
         //for 100, it's 97 and null
-        result =  tree.findInorderPreSucc(100);
+        result = tree.findInorderPreSucc(100);
 
-        Assert.assertEquals(97, result.getLeft().data.longValue());
-        Assert.assertNull(result.getRight());
+        Assert.assertEquals(97, result.predecessor.data.longValue());
+        Assert.assertNull(result.successor);
 
         //for 17, it's null and 28
-        result =  tree.findInorderPreSucc(17);
+        result = tree.findInorderPreSucc(17);
 
-        Assert.assertNull(result.getLeft());
-        Assert.assertEquals(28, result.getRight().data.longValue());
+        Assert.assertNull(result.predecessor);
+        Assert.assertEquals(28, result.successor.data.longValue());
 
         //for -7, it's 17 and null
-        result =  tree.findInorderPreSucc(-7);
+        result = tree.findInorderPreSucc(-7);
 
-        Assert.assertNull(result.getLeft());
-        Assert.assertEquals(17, result.getRight().data.longValue());
+        Assert.assertNull(result.predecessor);
+        Assert.assertEquals(17, result.successor.data.longValue());
+    }
+
+    @Test
+    public void testMergeBST() {
+        BinarySearchTree<Integer> tree1 = buildTree(3, 1, 5);
+        BinarySearchTree<Integer> tree2 = buildTree(4, 2, 6);
+
+        String mergedResult = tree1.merge(tree2);
+        String expectedResult = "123456";
+        Assert.assertEquals(expectedResult, mergedResult);
+
+        tree1 = buildTree(8, 2, 1, 4, 10);
+        tree2 = buildTree(5, 3, 0, 6);
+        mergedResult = tree1.merge(tree2);
+        expectedResult = "0123456810";
+        Assert.assertEquals(expectedResult, mergedResult);
+
+        tree1 = buildTree(8, 10, 12);
+        tree2 = buildTree(11, 9, 7);
+        mergedResult = tree1.merge(tree2);
+        expectedResult = "789101112";
+        Assert.assertEquals(expectedResult, mergedResult);
     }
 
 }
