@@ -5,8 +5,9 @@ package com.geeksforgeeks;
  */
 public class Node<T> {
     public Object data;
-    public Node left;
-    public Node right;
+    public Node<T> left;
+    public Node<T> right;
+    public Node<T> nextRight; //used for same level connect problem
 
     public Node(T data) {
         this.data = data;

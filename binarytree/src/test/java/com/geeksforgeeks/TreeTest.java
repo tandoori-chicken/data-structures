@@ -26,11 +26,9 @@ public class TreeTest {
         Assert.assertEquals("12345", levelorder(root));
 
         Node<Character> root2 = constructCharacterTree();
-//        System.out.println(inorderWithoutRecursion(root2));
         Assert.assertEquals("BDAGECHFI", inorderWithoutRecursion(root2));
-//        System.out.println(preorder(root2));
-//        Assert.assertEquals("42513",inorderWithoutRecursion(root));
     }
+
 
     private Node<Character> constructCharacterTree() {
         Node<Character> root = new Node<>('A');
@@ -42,6 +40,23 @@ public class TreeTest {
         root.right.right = new Node<>('F');
         root.right.right.left = new Node<>('H');
         root.right.right.right = new Node<>('I');
+        return root;
+    }
+
+
+    private Node<Character> constructCharacterTree2() {
+        Node<Character> root = new Node<>('A');
+        root.left = new Node<>('B');
+        root.left.right = new Node<>('D');
+        root.right = new Node<>('C');
+        root.right.left = new Node<>('E');
+        root.right.left.left = new Node<>('G');
+        root.right.right = new Node<>('F');
+        root.right.right.left = new Node<>('H');
+        root.right.right.right = new Node<>('I');
+        root.left.left=new Node<>('J');
+        root.left.left.right=new Node<>('K');
+
         return root;
     }
 
@@ -255,11 +270,9 @@ public class TreeTest {
         String inorder = inorder(root);
         String levelorder = levelorder(root);
 
-//        System.out.println(inorder);
-//        System.out.println(levelorder);
         Node<Character> recreatedRoot = constructInLevel(inorder, levelorder);
-        Assert.assertEquals(inorder,inorder(recreatedRoot));
-        Assert.assertEquals(levelorder,levelorder(recreatedRoot));
+        Assert.assertEquals(inorder, inorder(recreatedRoot));
+        Assert.assertEquals(levelorder, levelorder(recreatedRoot));
     }
 
     private Node<Character> constructInLevel(String inorder, String levelorder) {
@@ -279,5 +292,125 @@ public class TreeTest {
         root.right = constructInLevel(rightInorder, rightLevelorder);
 
         return root;
+    }
+
+    @Test
+    public void testMaxWidth() {
+        Node<Character> root = constructCharacterTree();
+
+        Assert.assertEquals(3, getMaxWidth(root));
+    }
+
+    private int getMaxWidth(Node<Character> root) {
+        if (root == null)
+            return 0;
+
+        int result = Integer.MIN_VALUE;
+        Queue<Node> queue = new LinkedList<>();
+
+        queue.add(root);
+        int count = queue.size();
+
+        while (!queue.isEmpty()) {
+            while (count-- > 0) {
+                Node removed = queue.remove();
+                if (removed.left != null)
+                    queue.add(removed.left);
+                if (removed.right != null)
+                    queue.add(removed.right);
+            }
+//            queue.stream().map(n -> n.data).forEach(System.out::print);
+//            System.out.println();
+            count = queue.size();
+            result = result > count ? result : count;
+        }
+        return result;
+    }
+
+    @Test
+    public void testPrintAncestor() {
+        Node<Character> root = constructCharacterTree();
+        Assert.assertEquals(getAncestors(root, 'E'), "CA");
+        Assert.assertEquals(getAncestors(root, 'I'), "FCA");
+        Assert.assertEquals(getAncestors(root, 'B'), "A");
+
+    }
+
+    private String getAncestors(Node<Character> root, char e) {
+        if (root == null)
+            return null;
+        if (root.data.equals(e))
+            return "";
+
+        String leftString = getAncestors(root.left, e);
+        if (leftString != null)
+            return leftString + root.data;
+        String rightString = getAncestors(root.right, e);
+        if (rightString != null)
+            return rightString + root.data;
+
+        return null;
+    }
+
+    @Test
+    public void testConnectSameLevelNodes() {
+        Node<Character> root = constructCharacterTree2();
+
+        connectSameLevelNodes(root);
+
+        Assert.assertNull(root.nextRight);
+        Assert.assertNull(root.right.nextRight);
+        Assert.assertEquals(root.left.nextRight, root.right);
+        Assert.assertEquals(root.left.right.nextRight,root.right.left);
+
+        Assert.assertEquals(root.left.left.nextRight,root.left.right);
+        Assert.assertEquals(root.left.left.right.nextRight,root.right.left.left);
+    }
+
+    private void connectSameLevelNodes(Node<Character> root) {
+        if(root==null)
+            return;
+
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+        int count = 1;
+        while(!queue.isEmpty())
+        {
+            while(count-->0)
+            {
+                Node removed = queue.remove();
+                if(removed.left!=null) {
+                    queue.add(removed.left);
+                }
+                if(removed.right!=null) {
+                    queue.add(removed.right);
+                }
+            }
+            connectQueueElements(queue);
+            count=queue.size();
+        }
+    }
+
+
+    private void connectChildren(Node<Character> n1, Node<Character> n2) {
+        if(n1==null||n2==null)
+            return;
+        Node<Character> n1RightMost = n1.right!=null?n1.right:n1.left;
+        Node<Character> n2LeftMost = n2.left!=null?n2.left:n2.right;
+        if(n1RightMost!=null)
+            n1RightMost.nextRight=n2LeftMost;
+    }
+
+    private void connectQueueElements(Queue<Node> queue) {
+
+        if(queue.isEmpty())
+            return;
+
+        Node temp = queue.peek();
+
+        for (Node curr : queue) {
+            temp.nextRight = curr;
+            temp = curr;
+        }
     }
 }
