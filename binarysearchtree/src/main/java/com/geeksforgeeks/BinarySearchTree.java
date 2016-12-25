@@ -248,6 +248,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
         StringBuilder mergedStringBuilder = new StringBuilder();
 
         while (curr1 != null || curr2 != null || !stack1.isEmpty() || !stack2.isEmpty()) {
+            //push as long as there is something to push
             if (curr1 != null || curr2 != null) {
                 if (curr1 != null) {
                     stack1.push(curr1);
@@ -258,10 +259,14 @@ public class BinarySearchTree<T extends Comparable<T>> {
                     curr2 = curr2.left;
                 }
             } else {
+                //if nothing to push in both stacks, check if any of the stacks are empty.
+                // this means we have visited every node in one of the trees.
+                // print inorder of remaining tree, taking precaution not to print something already printed.
                 if (stack1.isEmpty()) {
                     while (!stack2.isEmpty()) {
                         curr2 = stack2.pop();
                         curr2.left = null;
+                        //if there was something in left, we would have already printed it, so set it as null
                         mergedStringBuilder.append(traverseInorder(curr2));
                     }
                     return mergedStringBuilder.toString();
@@ -274,7 +279,9 @@ public class BinarySearchTree<T extends Comparable<T>> {
                     }
                     return mergedStringBuilder.toString();
                 }
-
+                // if neither of the stacks are empty, pop the top, compare
+                // print lesser value and set cur as it's right child.
+                // push the bigger node back into the stack
                 curr1 = stack1.pop();
                 curr2 = stack2.pop();
                 if (curr1.data.compareTo(curr2.data) < 0) {
@@ -293,6 +300,62 @@ public class BinarySearchTree<T extends Comparable<T>> {
         }
 
         return mergedStringBuilder.toString();
+
+    }
+
+    public void swap(T data1, T data2) {
+        Node<T> node1 = searchNode(data1);
+        Node<T> node2 = searchNode(data2);
+        if (node1 == null || node2 == null)
+            throw new IllegalArgumentException("Data not found in tree");
+        T temp = node1.data;
+        node1.data = node2.data;
+        node2.data = temp;
+    }
+
+    public void swap(Node<T> node1, Node<T> node2)
+    {
+        if (node1 == null || node2 == null)
+            throw new IllegalArgumentException("Data not found in tree");
+        T temp = node1.data;
+        node1.data = node2.data;
+        node2.data = temp;
+    }
+
+    public void unswap() {
+        NodeSwapDTO<T> nodeSwapDTO = new NodeSwapDTO<>();
+
+        parseForUnswap(root,nodeSwapDTO);
+        if(nodeSwapDTO.first!=null&&nodeSwapDTO.last!=null)
+        {
+            swap(nodeSwapDTO.first,nodeSwapDTO.last);
+        }
+        else if(nodeSwapDTO.first!=null&&nodeSwapDTO.middle!=null)
+        {
+            swap(nodeSwapDTO.first,nodeSwapDTO.middle);
+        }
+    }
+
+    private void parseForUnswap(Node<T> root, NodeSwapDTO<T> nodeSwapDTO)
+    {
+        if(root==null)
+            return;
+        parseForUnswap(root.left,nodeSwapDTO);
+
+        if(nodeSwapDTO.prev!=null&&root.data.compareTo(nodeSwapDTO.prev.data)<0)
+        {
+            if(nodeSwapDTO.first==null)
+            {
+                nodeSwapDTO.first=nodeSwapDTO.prev;
+                nodeSwapDTO.middle=root;
+            }
+            else
+            {
+                nodeSwapDTO.last=root;
+            }
+        }
+        nodeSwapDTO.prev=root;
+        parseForUnswap(root.right,nodeSwapDTO);
 
     }
 

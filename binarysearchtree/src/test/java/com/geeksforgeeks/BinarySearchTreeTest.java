@@ -162,4 +162,16 @@ public class BinarySearchTreeTest {
         Assert.assertEquals(expectedResult, mergedResult);
     }
 
+    @Test
+    public void testUnswapBST()
+    {
+        BinarySearchTree<Integer> tree = buildTree(10,5,8,7,3,15,20,25);
+        Assert.assertEquals("357810152025",tree.traverseInorder());
+        tree.swap(3, 15);
+        Assert.assertEquals("155781032025", tree.traverseInorder());
+        tree.unswap();
+        Assert.assertEquals("357810152025",tree.traverseInorder());
+
+    }
+
 }
