@@ -209,38 +209,55 @@ public class BinarySearchTreeTest {
     }
 
     @Test
-    public void testSumInBST()
-    {
+    public void testSumInBST() {
         BinarySearchTree<Integer> tree = buildTree(15, 10, 20, 8, 12, 16, 25);
 
         int sumToSearch = 24;
-        NodePairDTO<Integer> expectedResult = new NodePairDTO<>(tree.searchNode(8),tree.searchNode(16));
+        NodePairDTO<Integer> expectedResult = new NodePairDTO<>(tree.searchNode(8), tree.searchNode(16));
 
         NodePairDTO<Integer> actualResult = BinarySearchTree.findSumPair(tree.root, sumToSearch);
-        Assert.assertEquals(expectedResult.node1,actualResult.node1);
+        Assert.assertEquals(expectedResult.node1, actualResult.node1);
         Assert.assertEquals(expectedResult.node2, actualResult.node2);
 
         sumToSearch = 33;
-        expectedResult = new NodePairDTO<>(tree.searchNode(8),tree.searchNode(25));
+        expectedResult = new NodePairDTO<>(tree.searchNode(8), tree.searchNode(25));
         actualResult = BinarySearchTree.findSumPair(tree.root, sumToSearch);
-        Assert.assertEquals(expectedResult.node1,actualResult.node1);
+        Assert.assertEquals(expectedResult.node1, actualResult.node1);
         Assert.assertEquals(expectedResult.node2, actualResult.node2);
 
         sumToSearch = 18;
-        expectedResult = new NodePairDTO<>(tree.searchNode(8),tree.searchNode(10));
+        expectedResult = new NodePairDTO<>(tree.searchNode(8), tree.searchNode(10));
         actualResult = BinarySearchTree.findSumPair(tree.root, sumToSearch);
-        Assert.assertEquals(expectedResult.node1,actualResult.node1);
+        Assert.assertEquals(expectedResult.node1, actualResult.node1);
         Assert.assertEquals(expectedResult.node2, actualResult.node2);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testSumInBSTError()
-    {
-        BinarySearchTree<Integer> tree = buildTree(15,10,20,8,12,16,25);
+    public void testSumInBSTError() {
+        BinarySearchTree<Integer> tree = buildTree(15, 10, 20, 8, 12, 16, 25);
         BinarySearchTree.findSumPair(tree.root, 29);
     }
 
+    @Test
+    public void testUnShuffle() {
+        BinarySearchTree<Integer> tree = buildTree(8, 4, 10, 2, 7);
+        tree.root.data = 10;
+        tree.root.left.data = 2;
+        tree.root.left.left.data = 8;
+        tree.root.left.right.data = 4;
+        tree.root.right.data = 7;
+        tree.unShuffle();
+        Assert.assertEquals(tree, buildTree(8, 4, 10, 2, 7));
 
+        tree = buildTree(15, 10, 20, 5, 30);
+        tree.root.data = 10;
+        tree.root.left.data = 30;
+        tree.root.right.data = 15;
+        tree.root.left.left.data = 20;
+        tree.root.right.right.data = 5;
+        tree.unShuffle();
+        Assert.assertEquals(tree, buildTree(15, 10, 20, 5, 30));
+    }
 
 
 }

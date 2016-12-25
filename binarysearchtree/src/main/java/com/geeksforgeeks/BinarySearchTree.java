@@ -2,6 +2,8 @@ package com.geeksforgeeks;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Stack;
 
 
@@ -384,6 +386,47 @@ public class BinarySearchTree<T extends Comparable<T>> {
         nodeSwapDTO.prev = root;
         parseForUnswap(root.right, nodeSwapDTO);
 
+    }
+
+    public void unShuffle() {
+        unShuffle(root);
+    }
+
+    private void unShuffle(Node<T> root) {
+        if (root == null || (root.left == null && root.right == null))
+            return;
+
+        ArrayList<T> inorder = traverseInorderAndList(root);
+
+        Collections.sort(inorder); //T is comparable, so this is OK
+
+        buildTree(root, inorder, 0);
+    }
+
+    private int buildTree(Node<T> root, ArrayList<T> inorder, int index) {
+
+        if (root.left != null)
+            index = buildTree(root.left, inorder, index);
+        root.data = inorder.get(index);
+        index++;
+        if (root.right != null)
+            index = buildTree(root.right, inorder, index);
+
+        return index;
+    }
+
+    private ArrayList<T> traverseInorderAndList(Node<T> root) {
+        if (root == null)
+            return null;
+
+        ArrayList<T> leftList = traverseInorderAndList(root.left);
+        if (leftList == null)
+            leftList = new ArrayList<>(0);
+        leftList.add(root.data);
+        ArrayList<T> rightList = traverseInorderAndList(root.right);
+        if (rightList != null)
+            leftList.addAll(rightList);
+        return leftList;
     }
 
     static class Node<T> {
