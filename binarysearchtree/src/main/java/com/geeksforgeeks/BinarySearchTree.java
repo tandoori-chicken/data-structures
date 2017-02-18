@@ -236,21 +236,17 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
             if (root.left != null) {
                 Node<T> curr = root.left;
-                Node<T> prev = null;
-                while (curr != null) {
-                    prev = curr; //keeps track of the result
-                    curr = curr.right;
+                while (curr.right != null) {
+                    curr = curr.right; //keeps track of the result
                 }
-                dto.predecessor = prev;
+                dto.predecessor = curr;
             }
             if (root.right != null) {
                 Node<T> curr = root.right;
-                Node<T> prev = null;
-                while (curr != null) {
-                    prev = curr;
+                while (curr.left != null) {
                     curr = curr.left;
                 }
-                dto.successor = prev;
+                dto.successor = curr;
             }
         } else if (root.data.compareTo(dataToSearch) > 0) {
             //searching in left subtree, set successor as root
