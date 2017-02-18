@@ -54,8 +54,8 @@ public class TreeTest {
         root.right.right = new Node<>('F');
         root.right.right.left = new Node<>('H');
         root.right.right.right = new Node<>('I');
-        root.left.left=new Node<>('J');
-        root.left.left.right=new Node<>('K');
+        root.left.left = new Node<>('J');
+        root.left.left.right = new Node<>('K');
 
         return root;
     }
@@ -361,49 +361,38 @@ public class TreeTest {
         Assert.assertNull(root.nextRight);
         Assert.assertNull(root.right.nextRight);
         Assert.assertEquals(root.left.nextRight, root.right);
-        Assert.assertEquals(root.left.right.nextRight,root.right.left);
+        Assert.assertEquals(root.left.right.nextRight, root.right.left);
 
-        Assert.assertEquals(root.left.left.nextRight,root.left.right);
-        Assert.assertEquals(root.left.left.right.nextRight,root.right.left.left);
+        Assert.assertEquals(root.left.left.nextRight, root.left.right);
+        Assert.assertEquals(root.left.left.right.nextRight, root.right.left.left);
     }
 
     private void connectSameLevelNodes(Node<Character> root) {
-        if(root==null)
+        if (root == null)
             return;
 
         Queue<Node> queue = new LinkedList<>();
         queue.add(root);
         int count = 1;
-        while(!queue.isEmpty())
-        {
-            while(count-->0)
-            {
+        while (!queue.isEmpty()) {
+            while (count-- > 0) {
                 Node removed = queue.remove();
-                if(removed.left!=null) {
+                if (removed.left != null) {
                     queue.add(removed.left);
                 }
-                if(removed.right!=null) {
+                if (removed.right != null) {
                     queue.add(removed.right);
                 }
             }
             connectQueueElements(queue);
-            count=queue.size();
+            count = queue.size();
         }
     }
 
 
-    private void connectChildren(Node<Character> n1, Node<Character> n2) {
-        if(n1==null||n2==null)
-            return;
-        Node<Character> n1RightMost = n1.right!=null?n1.right:n1.left;
-        Node<Character> n2LeftMost = n2.left!=null?n2.left:n2.right;
-        if(n1RightMost!=null)
-            n1RightMost.nextRight=n2LeftMost;
-    }
-
     private void connectQueueElements(Queue<Node> queue) {
 
-        if(queue.isEmpty())
+        if (queue.isEmpty())
             return;
 
         Node temp = queue.peek();
@@ -412,5 +401,54 @@ public class TreeTest {
             temp.nextRight = curr;
             temp = curr;
         }
+    }
+
+    @Test
+    public void testPrintVerticalOrder() {
+        Node<Integer> root = new Node<>(1);
+        root.left = new Node<>(2);
+        root.right = new Node<>(3);
+        root.left.left = new Node<>(4);
+        root.left.right = new Node<>(5);
+        root.right.left = new Node<>(6);
+        root.right.right = new Node<>(7);
+        root.right.left.right = new Node<>(8);
+        root.right.right.right = new Node<>(9);
+
+        printVerticalOrder(root);
+    }
+
+    private <T> void printVerticalOrder(Node<T> root) {
+        MinMaxDTO dto = new MinMaxDTO(0, 0);
+        findMinMax(root, dto, 0);
+
+        for (int i = dto.min; i <= dto.max; i++) {
+            printVerticalLine(root, i, 0);
+            System.out.println();
+        }
+
+    }
+
+    private <T> void findMinMax(Node<T> node, MinMaxDTO dto, int curDistance) {
+        if (node == null)
+            return;
+        if (curDistance < dto.min)
+            dto.min = curDistance;
+        if (curDistance > dto.max)
+            dto.max = curDistance;
+
+        findMinMax(node.left, dto, curDistance - 1);
+        findMinMax(node.right, dto, curDistance + 1);
+
+    }
+
+    private <T> void printVerticalLine(Node<T> root, int lineNumber, int curDistance) {
+        if (root == null)
+            return;
+        if (curDistance == lineNumber)
+            System.out.print(root.data + " ");
+        printVerticalLine(root.left, lineNumber, curDistance - 1);
+        printVerticalLine(root.right, lineNumber, curDistance + 1);
+
     }
 }
