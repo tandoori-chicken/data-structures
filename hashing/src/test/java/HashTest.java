@@ -3,6 +3,7 @@ import org.junit.Test;
 
 import java.util.*;
 
+
 /**
  * Created by adarsh on 15/02/2017.
  */
@@ -19,7 +20,7 @@ public class HashTest {
         root.right.left.right = new Node<>(8);
         root.right.right.right = new Node<>(9);
 
-        Map<Integer, List<Integer>> map = new HashMap<>();
+        java.util.Map<Integer, List<Integer>> map = new HashMap<>();
         MinMaxDTO dto = new MinMaxDTO(0, 0);
         parseTree(root, dto, map, 0);
         for (int i = dto.min; i <= dto.max; i++) {
@@ -28,7 +29,7 @@ public class HashTest {
 
     }
 
-    private <T> void parseTree(Node<T> node, MinMaxDTO dto, Map<Integer, List<T>> lookupMap, int curDistance) {
+    private <T> void parseTree(Node<T> node, MinMaxDTO dto, java.util.Map<Integer, List<T>> lookupMap, int curDistance) {
         if (node == null)
             return;
         if (curDistance < dto.min)
@@ -49,7 +50,7 @@ public class HashTest {
 
     @Test
     public void testEmployeesUnderEmployee() {
-        Map<String, String> employeeMap = new HashMap<>(6);
+        java.util.Map<String, String> employeeMap = new HashMap<>(6);
         employeeMap.put("A", "C");
         employeeMap.put("B", "C");
         employeeMap.put("C", "F");
@@ -57,7 +58,7 @@ public class HashTest {
         employeeMap.put("E", "F");
         employeeMap.put("F", "F");
 
-        Map<String, Integer> underEmployeesCountMap = getUnderEmployeesCount(employeeMap);
+        java.util.Map<String, Integer> underEmployeesCountMap = getUnderEmployeesCount(employeeMap);
 
         assertMapContent(0, "A", underEmployeesCountMap);
         assertMapContent(0, "B", underEmployeesCountMap);
@@ -67,12 +68,12 @@ public class HashTest {
         assertMapContent(5, "F", underEmployeesCountMap);
     }
 
-    private <K, V> void assertMapContent(V expected, K key, Map<K, V> map) {
+    private <K, V> void assertMapContent(V expected, K key, java.util.Map<K, V> map) {
         Assert.assertEquals(expected, map.get(key));
     }
 
-    Map<String, Integer> getUnderEmployeesCount(Map<String, String> employeeMap) {
-        Map<String, Set<String>> reverseMap = new HashMap<>(employeeMap.size());
+    java.util.Map<String, Integer> getUnderEmployeesCount(java.util.Map<String, String> employeeMap) {
+        java.util.Map<String, Set<String>> reverseMap = new HashMap<>(employeeMap.size());
         for (String key : employeeMap.keySet()) {
             reverseMap.put(key, new HashSet<>());
         }
@@ -81,7 +82,7 @@ public class HashTest {
             reverseMap.get(value).add(key);
         }
 
-        Map<String, Integer> underEmployeeCountMap = new HashMap<>(employeeMap.size());
+        java.util.Map<String, Integer> underEmployeeCountMap = new HashMap<>(employeeMap.size());
         for (String key : reverseMap.keySet()) {
             underEmployeeCountMap.put(key, getCount(key, reverseMap));
         }
@@ -90,7 +91,7 @@ public class HashTest {
         return underEmployeeCountMap;
     }
 
-    private int getCount(String key, Map<String, Set<String>> reverseMap) {
+    private int getCount(String key, java.util.Map<String, Set<String>> reverseMap) {
         int count = 0;
         for (String value : reverseMap.get(key)) {
                 if (!value.equals(key))
