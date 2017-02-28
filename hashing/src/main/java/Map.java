@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Implementation of Hashtable using Separate Chaining method
@@ -19,9 +18,11 @@ class HashNode<K, V> {
 
 public class Map<K, V> {
 
-    private List<HashNode<K, V>> bucketArray;
+    private ArrayList<HashNode<K, V>> bucketArray;
     private int numBuckets;
     private int size;
+
+    private static double LOAD_FACTOR_THRESHOLD = 0.7d;
 
     public Map() {
         this.bucketArray = new ArrayList<>();
@@ -77,11 +78,51 @@ public class Map<K, V> {
         int bucketIndex = this.getHashBucketIndex(key);
         HashNode<K, V> head = this.bucketArray.get(bucketIndex);
 
+        //if key exists, get value, else return null
         while (head != null) {
             if (head.key.equals(key))
                 return head.value;
             head = head.next;
         }
         return null;
+    }
+
+    public void add(K key, V value) {
+        int bucketIndex = this.getHashBucketIndex(key);
+        HashNode<K, V> head = this.bucketArray.get(bucketIndex);
+
+        //if key exists, replace value and return
+        while (head != null) {
+            if (head.key.equals(key)) {
+                head.value = value;
+                return;
+            }
+            head = head.next;
+        }
+
+        //we add new key value pair in appropriate bucket
+        this.size++;
+        head = this.bucketArray.get(bucketIndex);
+        HashNode<K, V> newNode = new HashNode<>(key, value);
+        newNode.next = head;
+        this.bucketArray.set(bucketIndex, newNode);
+
+        //if load factor is beyond threshold, double bucket size and redistribute stored data
+        if ((1.0 * this.size) / this.numBuckets >= LOAD_FACTOR_THRESHOLD) {
+            ArrayList<HashNode<K, V>> tempArray = bucketArray;
+            this.bucketArray = new ArrayList<>();
+            this.numBuckets = 2 * this.numBuckets;
+            this.size = 0;
+
+            for (int i = 0; i < this.numBuckets; i++) {
+                this.bucketArray.add(null);
+            }
+            for (HashNode<K, V> headNode : tempArray) {
+                while (headNode != null) {
+                    this.add(headNode.key, headNode.value);
+                    headNode = headNode.next;
+                }
+            }
+        }
     }
 }

@@ -94,10 +94,36 @@ public class HashTest {
     private int getCount(String key, java.util.Map<String, Set<String>> reverseMap) {
         int count = 0;
         for (String value : reverseMap.get(key)) {
-                if (!value.equals(key))
-                    count += getCount(value, reverseMap) + 1; //count underemployees plus count manager
+            if (!value.equals(key))
+                count += getCount(value, reverseMap) + 1; //count underemployees plus count manager
         }
         return count;
+    }
+
+    @Test
+    public void testHashMap() {
+        Map<String, Integer> map = new Map<>();
+        map.add("this", 1);
+        map.add("coder", 2);
+        map.add("this", 4);
+        map.add("hi", 5);
+        //test basic operations
+        Assert.assertEquals(3, map.size());
+        Assert.assertEquals(new Integer(4), map.remove("this"));
+        Assert.assertNull(map.remove("this"));
+        Assert.assertEquals(2, map.size());
+        Assert.assertFalse(map.isEmpty());
+        //increase load factor and test redistribution
+        map.add("a", 1);
+        map.add("b", 2);
+        map.add("c", 3);
+        map.add("d", 4);
+        map.add("e", 5);
+        map.add("f", 6);
+        Assert.assertEquals(8, map.size());
+        Assert.assertEquals(new Integer(3), map.get("c"));
+        Assert.assertEquals(new Integer(6), map.get("f"));
+
     }
 }
 
