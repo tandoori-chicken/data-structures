@@ -14,29 +14,6 @@ public class LinkedList {
         this.head = head;
     }
 
-    public void removeLoop() {
-        removeLoop(this.head);
-    }
-
-    private void removeLoop(Node head) {
-        Node fastNode = head;
-        Node slowNode = head;
-        while (fastNode.next != null && fastNode.next.next != null) {
-            fastNode = fastNode.next.next;
-            slowNode = slowNode.next;
-            if (fastNode.equals(slowNode))
-                break;
-        }
-        Node curr = head;
-        while (!curr.equals(slowNode)) {
-            curr = curr.next;
-            slowNode = slowNode.next;
-        }
-        while (!fastNode.next.equals(slowNode)) {
-            fastNode = fastNode.next;
-        }
-        fastNode.next = null;
-    }
 
     public static class Node {
         public int data;
@@ -393,35 +370,31 @@ public class LinkedList {
             while (curr2.next != null) {
                 if (curr2.next.data == curr1.data) {
                     curr2.next = curr2.next.next;
-                }
-                else
-                {
-                    curr2=curr2.next;
+                } else {
+                    curr2 = curr2.next;
                 }
             }
-            curr1=curr1.next;
+            curr1 = curr1.next;
         }
     }
 
-    public Node retrieveKthToLast(int k)
-    {
-        return retrieveKthToLast(this.head,k).node;
+    public Node retrieveKthToLast(int k) {
+        return retrieveKthToLast(this.head, k).node;
     }
 
-    public KthNodeDTO retrieveKthToLast(Node node, int k)
-    {
-        if(node==null)
-            return new KthNodeDTO(null,0);
-        KthNodeDTO dto = retrieveKthToLast(node.next,k);
-        if(dto.node!=null)
+    public KthNodeDTO retrieveKthToLast(Node node, int k) {
+        if (node == null)
+            return new KthNodeDTO(null, 0);
+        KthNodeDTO dto = retrieveKthToLast(node.next, k);
+        if (dto.node != null)
             return dto;
-        if(dto.index==k)
-            return new KthNodeDTO(node,dto.index+1);
+        if (dto.index == k)
+            return new KthNodeDTO(node, dto.index + 1);
         dto.index++;
         return dto;
     }
 
-    private static class KthNodeDTO{
+    private static class KthNodeDTO {
         Node node;
         int index;
 
@@ -431,28 +404,23 @@ public class LinkedList {
         }
     }
 
-    public Node partitionUnordered(int partitionValue)
-    {
+    public Node partitionUnordered(int partitionValue) {
         Node headToReturn = new Node(this.head.data);
-        return partitionUnordered(this.head.next, headToReturn,headToReturn,partitionValue);
+        return partitionUnordered(this.head.next, headToReturn, headToReturn, partitionValue);
     }
 
     private Node partitionUnordered(Node node, Node newHead, Node newTail, int partitionValue) {
-        while(node!=null)
-        {
-            if(node.data<partitionValue)
-            {
+        while (node != null) {
+            if (node.data < partitionValue) {
                 Node before = new Node(node.data);
-                before.next=newHead;
-                newHead=before;
-            }
-            else
-            {
+                before.next = newHead;
+                newHead = before;
+            } else {
                 Node after = new Node(node.data);
-                newTail.next=after;
-                newTail=after;
+                newTail.next = after;
+                newTail = after;
             }
-            node=node.next;
+            node = node.next;
         }
         return newHead;
     }
@@ -619,7 +587,30 @@ public class LinkedList {
         if (Objects.equals(nodeA, nodeB))
             return nodeA;
         return intersection;
+    }
 
+    public void removeLoop() {
+        removeLoop(this.head);
+    }
+
+    private void removeLoop(Node head) {
+        Node fastNode = head;
+        Node slowNode = head;
+        while (fastNode.next != null && fastNode.next.next != null) {
+            fastNode = fastNode.next.next;
+            slowNode = slowNode.next;
+            if (fastNode.equals(slowNode))
+                break;
+        }
+        Node curr = head;
+        while (!curr.equals(slowNode)) {
+            curr = curr.next;
+            slowNode = slowNode.next;
+        }
+        while (!fastNode.next.equals(slowNode)) {
+            fastNode = fastNode.next;
+        }
+        fastNode.next = null;
     }
 
     @Override
