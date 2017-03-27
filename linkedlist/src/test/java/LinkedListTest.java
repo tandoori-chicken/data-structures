@@ -1,6 +1,11 @@
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
+import static org.junit.Assert.assertEquals;
+
 /**
  * Created by adarsh on 13/12/2016.
  */
@@ -188,8 +193,7 @@ public class LinkedListTest {
     }
 
     @Test
-    public void testRotate()
-    {
+    public void testRotate() {
         LinkedList linkedList = new LinkedList();
         linkedList.append(10);
         linkedList.append(20);
@@ -198,11 +202,189 @@ public class LinkedListTest {
         linkedList.append(50);
         linkedList.append(60);
 
-        LinkedList.Node newHead = LinkedList.rotate(linkedList.head,4);
-        Assert.assertEquals("506010203040",LinkedList.print(newHead));
+        LinkedList.Node newHead = LinkedList.rotate(linkedList.head, 4);
+        Assert.assertEquals("506010203040", LinkedList.print(newHead));
+
+    }
+
+    @Test
+    public void testDeleteNodeGivenMiddleNode() {
+        LinkedList list = new LinkedList();
+        IntStream.rangeClosed(1, 5).boxed().forEach(list::append);
+
+        list.removeNode(list.head.next.next); //Delete 3
+        assertEquals("1245", list.toString());
+
+        list = new LinkedList();
+        IntStream.rangeClosed(1, 5).boxed().forEach(list::append);
+        list.removeNode(list.head); //Delete 1
+        assertEquals("2345", list.toString());
+    }
+
+    @Test
+    public void testRemoveDuplicateValues() {
+        LinkedList list = buildList(1, 2, 3, 4, 5, 1, 4, 6, 7, 1, 6);
+        list.removeDuplicatesHashing();
+        assertEquals("1234567", list.toString());
+
+        list = buildList(1, 1, 2, 2, 3, 3, 3, 4);
+        list.removeDuplicatesHashing();
+        assertEquals("1234", list.toString());
+
+        list = buildList(1, 2, 3, 4, 5, 1, 4, 6, 7, 1, 6);
+        list.removeDuplicatesNoHash();
+        assertEquals("1234567", list.toString());
+
+        list = buildList(1, 2, 3, 4, 5, 1, 4, 6, 7, 1, 6, 8);
+        list.removeDuplicatesNoHash();
+        assertEquals("12345678", list.toString());
+
+        list = buildList(1, 1, 2, 2, 3, 3, 3, 4);
+        list.removeDuplicatesNoHash();
+        assertEquals("1234", list.toString());
+    }
+
+
+    @Test
+    public void testKthFromLast()
+    {
+        LinkedList list = buildList(1,2,3,4,5,6,7,8,9,10);
+
+        LinkedList.Node node = list.retrieveKthToLast(0);
+        assertEquals(10,node.data);
+
+        node = list.retrieveKthToLast(3);
+        assertEquals(7,node.data);
+
+        node = list.retrieveKthToLast(9);
+        assertEquals(1,node.data);
+    }
+
+    @Test
+    public void testPartitionUnordered()
+    {
+        LinkedList list = buildList(3,5,8,5,10,2,1);
+        LinkedList.Node partitionedListHead = list.partitionUnordered(5);
+        LinkedList partitionedList = new LinkedList(partitionedListHead);
+
+        System.out.println(partitionedList);
+
+        partitionedList = new LinkedList(list.partitionUnordered(7));
+
+        System.out.println(partitionedList);
+
+        System.out.println(new LinkedList(list.partitionUnordered(11)));
+        System.out.println(new LinkedList(list.partitionUnordered(0)));
 
     }
 
 
+    @Test
+    public void testSumLinkedLists() {
+        LinkedList linkedListA = buildList(7, 1, 7);
+        LinkedList linkedListB = buildList(5, 9, 2);
+
+        LinkedList.Node summedHead = LinkedList.getSumNew(linkedListA.head, linkedListB.head);
+        LinkedList summedList = new LinkedList(summedHead);
+        Assert.assertEquals("2101", summedList.convertToString());
+
+        linkedListA = buildList(7, 1, 6);
+        linkedListB = buildList(5, 9, 2);
+
+        summedHead = LinkedList.getSumNew(linkedListA.head, linkedListB.head);
+        summedList = new LinkedList(summedHead);
+        Assert.assertEquals("219", summedList.convertToString());
+
+        linkedListA = buildList(7, 1, 6);
+        linkedListB = buildList(5, 9);
+
+        summedHead = LinkedList.getSumNew(linkedListA.head, linkedListB.head);
+        summedList = new LinkedList(summedHead);
+        Assert.assertEquals("217", summedList.convertToString());
+    }
+
+    private LinkedList buildList(int... data) {
+        LinkedList linkedList = new LinkedList();
+        Arrays.stream(data).boxed().forEach(linkedList::append);
+        return linkedList;
+    }
+
+    @Test
+    public void testSumLinkedListReversed() {
+        LinkedList linkedListA = buildList(7, 1, 7);
+        LinkedList linkedListB = buildList(2, 9, 5);
+
+        LinkedList.Node summedHead = LinkedList.getSumReversed(linkedListA.head, linkedListB.head);
+        LinkedList summedList = new LinkedList(summedHead);
+        Assert.assertEquals("1012", summedList.convertToString());
+
+        linkedListA = buildList(6, 1, 7);
+        linkedListB = buildList(2, 9, 5);
+
+        summedHead = LinkedList.getSumReversed(linkedListA.head, linkedListB.head);
+        summedList = new LinkedList(summedHead);
+        Assert.assertEquals("912", summedList.convertToString());
+
+        linkedListA = buildList(6, 1, 7);
+        linkedListB = buildList(5);
+
+        summedHead = LinkedList.getSumReversed(linkedListA.head, linkedListB.head);
+        summedList = new LinkedList(summedHead);
+        Assert.assertEquals("622", summedList.convertToString());
+    }
+
+    @Test
+    public void testPalindrome() {
+
+        Assert.assertTrue(buildList(1, 4, 6, 4, 1).isPalindrome());
+        Assert.assertFalse(buildList(1, 2, 3, 1).isPalindrome());
+        Assert.assertTrue(buildList(1, 2, 2, 1).isPalindrome());
+        Assert.assertFalse(buildList(0, 2, 2, 1).isPalindrome());
+        Assert.assertFalse(buildList(2, 2, 1).isPalindrome());
+        Assert.assertTrue(buildList(2, 2, 2).isPalindrome());
+        Assert.assertTrue(buildList(1, 1).isPalindrome());
+        Assert.assertFalse(buildList(1, 2).isPalindrome());
+    }
+
+
+    @Test
+    public void testIntersection() {
+        LinkedList l1 = buildList(1, 2, 3, 4, 5, 6, 7);
+
+        LinkedList l2 = buildList(20, 19);
+
+        l2.nodeAt(2).next = l1.nodeAt(5);
+        Assert.assertEquals("2019567", l2.convertToString());
+
+        Assert.assertNotNull(LinkedList.getIntersection(l1.head, l2.head));
+
+        Assert.assertNull(LinkedList.getIntersection(
+                buildList(1, 2, 3, 4, 5, 6).head
+                , buildList(4, 5, 6).head
+        ));
+
+        l1 = buildList(1, 2, 3, 4, 5, 6, 7);
+        l2.head = l1.nodeAt(7);
+        Assert.assertNotNull(LinkedList.getIntersection(l1.head, l2.head));
+
+    }
+
+    @Test
+    public void testRemoveLoop()
+    {
+        LinkedList list = buildList(1,2,3,4,5,6,7,8,9,10);
+
+        list.nodeAt(10).next=list.nodeAt(6);
+        list.removeLoop();
+        Assert.assertEquals("12345678910",list.convertToString());
+
+        list.nodeAt(10).next=list.nodeAt(1);
+        list.removeLoop();
+        Assert.assertEquals("12345678910",list.convertToString());
+
+        list.nodeAt(10).next=list.nodeAt(10);
+        list.removeLoop();
+        Assert.assertEquals("12345678910",list.convertToString());
+    }
 
 }
