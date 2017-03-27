@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * Created by adarsh on 16/12/2016.
@@ -235,9 +236,6 @@ public class StackTest {
         Assert.assertEquals(convertArrayToString(outputArrayExpected), convertArrayToString(output));
     }
 
-    /**
-     *
-     */
     private Integer[] getStockSpan(int[] input) {
         Integer[] result = new Integer[input.length];
 
@@ -259,4 +257,86 @@ public class StackTest {
         }
         return result;
     }
+
+    @Test
+    public void testMultipleStackArray() {
+        MultipleStackArray<Integer> array = new MultipleStackArray<>(5, 3);
+        Assert.assertTrue(array.isEmpty(0));
+        Assert.assertTrue(array.isEmpty(1));
+        Assert.assertTrue(array.isEmpty(2));
+
+        Assert.assertFalse(array.isFull());
+
+
+        array.push(1, 1);
+        array.push(1, 2);
+        array.push(2, 3);
+        array.push(0, 4);
+        array.push(2, 5);
+        Assert.assertTrue(array.isFull());
+        Assert.assertEquals(5, array.top(2).intValue());
+        Assert.assertEquals(4, array.top(0).intValue());
+        Assert.assertEquals(2, array.top(1).intValue());
+
+        int popped = array.pop(0);
+        Assert.assertEquals(4, popped);
+        Assert.assertTrue(array.isEmpty(0));
+
+        array.push(1, 4);
+        Assert.assertTrue(array.isFull());
+        Assert.assertEquals(4, array.top(1).intValue());
+
+    }
+
+    @Test
+    public void testMinTrackingStack() {
+        MinTrackingStack<Integer> stack = new MinTrackingStack<>(5, Comparator.<Integer>naturalOrder());
+        stack.push(5);
+        Assert.assertEquals(5, stack.min().intValue());
+        stack.push(3);
+        Assert.assertEquals(3, stack.min().intValue());
+        stack.push(4);
+        Assert.assertEquals(3, stack.min().intValue());
+        stack.push(2);
+        Assert.assertEquals(2, stack.min().intValue());
+        stack.push(1);
+        Assert.assertEquals(1, stack.min().intValue());
+
+        stack.pop();
+        Assert.assertEquals(2, stack.min().intValue());
+        stack.pop();
+        Assert.assertEquals(3, stack.min().intValue());
+        stack.pop();
+        Assert.assertEquals(3, stack.min().intValue());
+        stack.pop();
+        Assert.assertEquals(5, stack.min().intValue());
+        stack.pop();
+        Assert.assertTrue(stack.isEmpty());
+        Assert.assertTrue(stack.minStack.isEmpty());
+    }
+
+    @Test
+    public void testThresholdStack() {
+        ThresholdStack<Integer> stack = new ThresholdStack<>(3);
+        Assert.assertTrue(stack.isEmpty());
+        for(int i=1;i<=10;i++)
+        {
+            stack.push(i);
+        }
+        Assert.assertFalse(stack.isEmpty());
+        ThresholdStack.NodeStack<Integer> lastStack = stack.headStack.nextStack.nextStack.nextStack;
+        Assert.assertNotNull(lastStack);
+        Assert.assertEquals(10, lastStack.top().intValue());
+        stack.pop();
+        Assert.assertEquals(9, stack.top().intValue());
+        for(int i=1;i<=7;i++)
+        {
+            stack.pop();
+        }
+        Assert.assertEquals(2,stack.top().intValue());
+        stack.pop();
+        stack.pop();
+        Assert.assertTrue(stack.isEmpty());
+    }
+
 }

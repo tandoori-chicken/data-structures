@@ -14,6 +14,11 @@ public class Stack<T> {
         stack = new Object[size];
     }
 
+    public boolean isFull()
+    {
+        return top==(size-1);
+    }
+
     public void push(T data) {
         if (top == size - 1)
             throw new UnsupportedOperationException("Stack full");
