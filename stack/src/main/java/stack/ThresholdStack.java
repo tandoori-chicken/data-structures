@@ -58,8 +58,12 @@ public class ThresholdStack<T> { //Stack that has threshold and creates a new st
     }
 
     public void push(T data) {
-        NodeStack<T> lastNodeStack = getLastStack();
-        lastNodeStack.push(data);
+        NodeStack<T> currStack = this.headStack;
+        while(currStack.nextStack!=null&&currStack.isFull())
+        {
+            currStack=currStack.nextStack;
+        }
+        currStack.push(data);
     }
 
     public T pop() {
@@ -71,5 +75,17 @@ public class ThresholdStack<T> { //Stack that has threshold and creates a new st
     {
         NodeStack<T> lastNodeStack = getLastStack();
         return lastNodeStack.top();
+    }
+
+    public T popAt(int stackIndex)
+    {
+        NodeStack<T> curStack = this.headStack;
+        while(curStack.nextStack!=null&&stackIndex-->0)
+        {
+            curStack=curStack.nextStack;
+        }
+        if(stackIndex>0)
+            throw new UnsupportedOperationException("Cannot find stack at index : "+stackIndex);
+        return curStack.pop();
     }
 }

@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  * Created by adarsh on 16/12/2016.
@@ -290,7 +289,7 @@ public class StackTest {
 
     @Test
     public void testMinTrackingStack() {
-        MinTrackingStack<Integer> stack = new MinTrackingStack<>(5, Comparator.<Integer>naturalOrder());
+        MinTrackingStack<Integer> stack = new MinTrackingStack<>(5);
         stack.push(5);
         Assert.assertEquals(5, stack.min().intValue());
         stack.push(3);
@@ -319,8 +318,7 @@ public class StackTest {
     public void testThresholdStack() {
         ThresholdStack<Integer> stack = new ThresholdStack<>(3);
         Assert.assertTrue(stack.isEmpty());
-        for(int i=1;i<=10;i++)
-        {
+        for (int i = 1; i <= 10; i++) {
             stack.push(i);
         }
         Assert.assertFalse(stack.isEmpty());
@@ -329,14 +327,60 @@ public class StackTest {
         Assert.assertEquals(10, lastStack.top().intValue());
         stack.pop();
         Assert.assertEquals(9, stack.top().intValue());
-        for(int i=1;i<=7;i++)
-        {
+        for (int i = 1; i <= 7; i++) {
             stack.pop();
         }
-        Assert.assertEquals(2,stack.top().intValue());
+        Assert.assertEquals(2, stack.top().intValue());
         stack.pop();
         stack.pop();
         Assert.assertTrue(stack.isEmpty());
+
+    }
+
+    @Test
+    public void testThresholdStackPopAt() {
+        ThresholdStack<Integer> stack = new ThresholdStack<>(3);
+        for (int i = 1; i <= 10; i++) {
+            stack.push(i);
+        }
+        Assert.assertEquals(3, stack.popAt(0).intValue());
+        Assert.assertEquals(6, stack.popAt(1).intValue());
+        Assert.assertEquals(10, stack.pop().intValue());
+        stack.push(3);
+        Assert.assertNotEquals(3, stack.top().intValue());
+        Assert.assertEquals(3, stack.headStack.top().intValue());
+    }
+
+    @Test
+    public void testQueueWithStacks() {
+        QueueWithStacks<Integer> queue = new QueueWithStacks<>(5);
+        queue.add(1);
+        queue.add(2);
+        Assert.assertEquals(1, queue.remove().intValue());
+        queue.add(3);
+        queue.add(4);
+        queue.add(5);
+        queue.add(1);
+        Assert.assertEquals(2, queue.remove().intValue());
+        Assert.assertEquals(3, queue.remove().intValue());
+        Assert.assertEquals(4, queue.remove().intValue());
+        Assert.assertEquals(5, queue.remove().intValue());
+        Assert.assertEquals(1, queue.remove().intValue());
+    }
+
+    @Test
+    public void testSortedStack()
+    {
+        SortedStack<Integer> sortedStack = new SortedStack<>(5);
+        sortedStack.push(3);
+        sortedStack.push(4);
+        sortedStack.push(1);
+        sortedStack.push(2);
+        sortedStack.push(5);
+        Assert.assertEquals(1, sortedStack.top().intValue());
+        sortedStack.pop();
+        sortedStack.pop();
+        Assert.assertEquals(3,sortedStack.top().intValue());
     }
 
 }
