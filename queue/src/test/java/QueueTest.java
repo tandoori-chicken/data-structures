@@ -1,3 +1,4 @@
+import animals.Animal;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -48,4 +49,22 @@ public class QueueTest {
         }
         throw new IllegalArgumentException("Should not reach here");
     }
+
+    @Test
+    public void testAnimalQueue()
+    {
+        QueueOfAnimals queue = new QueueOfAnimals();
+        queue.enqueue(new Animal.Cat());
+        queue.enqueue(new Animal.Dog());
+
+        Assert.assertTrue(queue.deQueueAny() instanceof Animal.Cat);
+        Assert.assertTrue(queue.deQueueAny() instanceof Animal.Dog);
+
+        queue.enqueue(new Animal.Cat());
+        queue.enqueue(new Animal.Cat());
+        queue.enqueue(new Animal.Dog());
+        Assert.assertNotNull(queue.dequeueDog());
+
+    }
+
 }
