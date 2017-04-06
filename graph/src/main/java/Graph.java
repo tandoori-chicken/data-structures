@@ -41,20 +41,20 @@ public class Graph {
     }
 
     public String traverseDepthFirst(int startIndex) {
-        return traverseDepthFirst(startIndex, new boolean[vertexCount]);
+        return traverseDepthFirstHelper(startIndex, new boolean[vertexCount]).toString();
     }
 
-    private String traverseDepthFirst(int curIndex, boolean[] visited) {
+    private StringBuilder traverseDepthFirstHelper(int curIndex, boolean[] visited) {
         visited[curIndex] = true;
         StringBuilder dfsBuilder = new StringBuilder();
         dfsBuilder.append(curIndex);
 
         for (int adjacentIndex : adjacencyList.get(curIndex)) {
             if (!visited[adjacentIndex])
-                dfsBuilder.append(traverseDepthFirst(adjacentIndex, visited));
+                dfsBuilder.append(traverseDepthFirstHelper(adjacentIndex, visited));
         }
 
-        return dfsBuilder.toString();
+        return dfsBuilder;
     }
 
     public boolean isCyclic() {
@@ -84,4 +84,7 @@ public class Graph {
         recursionStack[index] = false;
         return false;
     }
+
+
+
 }

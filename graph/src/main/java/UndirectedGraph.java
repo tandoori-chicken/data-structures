@@ -32,13 +32,13 @@ public class UndirectedGraph {
         this.adjacencyList.get(destIndex).add(srcIndex);
     }
 
-    public int findParentIndex(int[] parentIndices, int index) {
+    private int findParentIndex(int[] parentIndices, int index) {
         if (parentIndices[index] == -1)
             return index;
         return findParentIndex(parentIndices, parentIndices[index]);
     }
 
-    public void union(int[] parentIndices, int index1, int index2) {
+    private void union(int[] parentIndices, int index1, int index2) {
         int parentIndex1 = this.findParentIndex(parentIndices, index1);
         int parentIndex2 = this.findParentIndex(parentIndices, index2);
         parentIndices[parentIndex1] = parentIndex2;
@@ -61,7 +61,7 @@ public class UndirectedGraph {
         return false;
     }
 
-    public boolean isCyclicUtil(int index, boolean[] visited, int parentIndex) {
+    private boolean isCyclicUtil(int index, boolean[] visited, int parentIndex) {
         visited[index] = true;
         for (int adjacentIndex : this.adjacencyList.get(index)) {
             if (!visited[adjacentIndex]) {
