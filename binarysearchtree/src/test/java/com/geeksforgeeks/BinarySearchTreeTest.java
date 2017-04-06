@@ -4,6 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by adarsh on 22/12/2016.
@@ -49,6 +50,13 @@ public class BinarySearchTreeTest {
         return tree;
     }
 
+    private <T extends Comparable<T>> BinarySearchTree<T> buildTree(List<T> tList) {
+        if (tList.isEmpty())
+            return null;
+        BinarySearchTree<T> tree = new BinarySearchTree<>();
+        tList.stream().forEach(tree::insert);
+        return tree;
+    }
 
     @Test
     public void testTreeEquality() {
@@ -260,4 +268,53 @@ public class BinarySearchTreeTest {
     }
 
 
+    @Test
+    public void testBuildBSTFromSortedArray() {
+        BinarySearchTree<Integer> tree = BinarySearchTree.buildFromArray(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        Assert.assertEquals("123456789", tree.traverseInorder());
+
+        tree = BinarySearchTree.buildFromArray(1, 2, 3, 4, 5, 6, 7, 8);
+        Assert.assertEquals("12345678", tree.traverseInorder());
+
+    }
+
+    @Test
+    public void testTreeBuildingArrayGeneration() {
+        //Given a tree, the aim is to generate the set of all arrays (seeds) that could generate it.
+        Assert.assertEquals(buildTree(2, 1, 3), buildTree(2, 3, 1));
+        //Here both 2,3,1 and 2,1,3 produce the sam tree
+
+        BinarySearchTree<Integer> tree = buildBigIntegerTree();
+        List<List<Integer>> seeds = tree.findSeeds();
+
+        Assert.assertTrue(!seeds.isEmpty()); //wow!! 17,325 seeds
+
+        for (List<Integer> seed : seeds) {
+            Assert.assertEquals(tree, buildTree(seed));
+        }
+    }
+
+    @Test
+    public void testTreeWithRandomPointer() {
+        BinarySearchTreeWithRandom<Integer> tree = new BinarySearchTreeWithRandom<>();
+        tree.insert(3);
+        tree.insert(1);
+        tree.insert(2);
+        tree.insert(4);
+        tree.insert(0);
+
+        int[] countArray=new int[5];
+        int N=10000;
+        for(int i=0;i<N;i++)
+        {
+            int randomData = tree.getRandomNode().data;
+            countArray[randomData]++;
+        }
+
+        for(int i=0;i<5;i++)
+        {
+            System.out.println(i+" : "+countArray[i]);
+        }
+
+    }
 }

@@ -2,9 +2,8 @@ package com.geeksforgeeks;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 /**
@@ -61,13 +60,32 @@ public class BinarySearchTree<T extends Comparable<T>> {
         throw new IllegalArgumentException("Sum : " + sum + " not found");
     }
 
+    public static <T extends Comparable<T>> BinarySearchTree<T> buildFromArray(T... array) {
+        return new BinarySearchTree<>(buildRootFromArray(array,0,array.length));
+    }
+
+    private static <T extends Comparable<T>> Node<T> buildRootFromArray(T[] array,int minInclusive, int maxExclusive) {
+        if(minInclusive>=maxExclusive)
+        {
+            return null;
+        }
+        if(maxExclusive-minInclusive==1)
+            return new Node<>(array[minInclusive]);
+
+        int middle = (minInclusive+maxExclusive)/2;
+        Node<T> root = new Node<>(array[middle]);
+        root.left = buildRootFromArray(array,minInclusive,middle);
+        root.right=buildRootFromArray(array,middle+1,maxExclusive);
+        return root;
+    }
+
     public void insert(T dataToInsert) {
         root = insertRecursive(root, dataToInsert);
     }
 
     private Node<T> insertRecursive(Node<T> root, T dataToInsert) {
         if (root == null) {
-            root = new Node<T>(dataToInsert);
+            root = new Node<>(dataToInsert);
             return root;
         } else if (root.data.compareTo(dataToInsert) > 0) {
             root.left = insertRecursive(root.left, dataToInsert);
@@ -424,6 +442,77 @@ public class BinarySearchTree<T extends Comparable<T>> {
             leftList.addAll(rightList);
         return leftList;
     }
+
+    public List<List<T>> findSeeds() {
+        List<LinkedList<Node<T>>> seeds = new ArrayList<>();
+        SeedsDTO<T> dto = new SeedsDTO<>(seeds);
+        findSeeds(this.root, dto);
+        return dto.seeds //converts list of nodes to list of data
+                .stream()
+                .map(seed->seed.stream().map(n->n.data).collect(Collectors.toList()))
+                .collect(Collectors.toList());
+    }
+
+
+
+    private void findSeeds(Node<T> node, SeedsDTO<T> dto) {
+        if(node==null)
+            return;
+        List<LinkedList<Node<T>>> newSeeds = new ArrayList<>();
+        if(dto.seeds.isEmpty())
+        {
+            LinkedList<Node<T>> linkedList = new LinkedList<>();
+            linkedList.add(node);
+            newSeeds.add(linkedList);
+        }
+        else {
+            for (LinkedList<Node<T>> incompleteSeed : dto.seeds) {
+                int parentIndex = getParentIndex(incompleteSeed, node);
+                newSeeds.addAll(constructNewSeeds(incompleteSeed, parentIndex, node));
+
+            }
+        }
+
+        dto.seeds=newSeeds;
+
+        findSeeds(node.left,dto);
+        findSeeds(node.right,dto);
+
+    }
+
+    private List<LinkedList<Node<T>>> constructNewSeeds(LinkedList<Node<T>> incompleteSeed, int parentIndex, Node<T> node) {
+        List<LinkedList<Node<T>>> toReturnList = new ArrayList<>();
+        for(int index=parentIndex;index<incompleteSeed.size();index++)
+        {
+            LinkedList<Node<T>> newList = new LinkedList<>(incompleteSeed);
+            newList.add(index+1,node);
+            toReturnList.add(newList);
+        }
+
+        return toReturnList;
+
+    }
+
+    private int getParentIndex(LinkedList<Node<T>> incompleteSeed, Node<T> node) {
+        int index=0;
+        for(Node<T> curNode : incompleteSeed)
+        {
+            if((curNode.left!=null&&curNode.left.equals(node))||(curNode.right!=null&&curNode.right.equals(node)))
+                return index;
+            index++;
+        }
+        return -1;
+    }
+
+
+    private static class SeedsDTO<T>{
+        List<LinkedList<Node<T>>> seeds;
+
+        public SeedsDTO(List<LinkedList<Node<T>>> seeds) {
+            this.seeds=seeds;
+        }
+    }
+
 
     static class Node<T> {
         T data;
