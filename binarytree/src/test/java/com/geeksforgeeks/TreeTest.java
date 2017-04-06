@@ -3,9 +3,8 @@ package com.geeksforgeeks;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by adarsh on 19/12/2016.
@@ -451,4 +450,488 @@ public class TreeTest {
         printVerticalLine(root.right, lineNumber, curDistance + 1);
 
     }
+
+    @Test
+    public void testSameLevelLinkedList() {
+        Node<Integer> root = new Node<>(10);
+        Node<Integer> node5 = root.left = new Node<>(5);
+        Node<Integer> node20 = root.right = new Node<>(20);
+        Node<Integer> node3 = node20.left = new Node<>(3);
+        node20.right = new Node<>(7);
+        node5.right = new Node<>(12);
+        node3.left = new Node<>(9);
+        node3.right = new Node<>(18);
+
+        List<LinkedList<Node<Integer>>> linkedLists = constructDepthWiseLists(root);
+        Assert.assertEquals(4, linkedLists.size());
+        Assert.assertEquals("10", getStringRepresentation(linkedLists.get(0)));
+        Assert.assertEquals("520", getStringRepresentation(linkedLists.get(1)));
+        Assert.assertEquals("1237", getStringRepresentation(linkedLists.get(2)));
+        Assert.assertEquals("918", getStringRepresentation(linkedLists.get(3)));
+    }
+
+    private String getStringRepresentation(LinkedList<Node<Integer>> linkedList) {
+        return linkedList.stream().map(n -> n.data + "").collect(Collectors.joining());
+    }
+
+    private List<LinkedList<Node<Integer>>> constructDepthWiseLists(Node<Integer> root) {
+        if (root == null)
+            return new ArrayList<>();
+        List<LinkedList<Node<Integer>>> listOfLists = new ArrayList<>();
+        Queue<Node<Integer>> queue = new LinkedList<>();
+        queue.offer(root);
+        int addedCount = 1;
+        while (!queue.isEmpty()) {
+            LinkedList<Node<Integer>> linkedList = new LinkedList<>();
+            while (addedCount-- > 0) {
+                linkedList.offer(queue.poll());
+            }
+            if (!linkedList.isEmpty()) {
+                listOfLists.add(new LinkedList<>(linkedList));
+            }
+            while (!linkedList.isEmpty()) {
+                Node<Integer> curNode = linkedList.poll();
+                if (curNode.left != null)
+                    queue.offer(curNode.left);
+                if (curNode.right != null)
+                    queue.offer(curNode.right);
+            }
+            addedCount = queue.size();
+        }
+        return listOfLists;
+    }
+
+    @Test
+    public void testBinaryTreeBalanced() {
+        Node<Integer> root = new Node<>(2);
+        Node<Integer> node7 = root.left = new Node<>(7);
+        Node<Integer> node5 = root.right = new Node<>(5);
+        node7.left = new Node<>(2);
+        Node<Integer> node6 = node7.right = new Node<>(6);
+        node6.left = new Node<>(5);
+        node6.right = new Node<>(11);
+        Node<Integer> node9 = node5.right = new Node<>(9);
+        node9.left = new Node<>(4);
+        Assert.assertFalse(isBalanced(root));
+
+        root = new Node<>(10);
+        Node<Integer> node5_2 = root.left = new Node<>(5);
+        Node<Integer> node20 = root.right = new Node<>(20);
+        Node<Integer> node3 = node20.left = new Node<>(3);
+        node20.right = new Node<>(7);
+        node5_2.right = new Node<>(12);
+        node3.left = new Node<>(9);
+        node3.right = new Node<>(18);
+        Assert.assertTrue(isBalanced(root));
+    }
+
+    private boolean isBalanced(Node<Integer> root) {
+        int height = getHeight2(root);
+        return height != Integer.MAX_VALUE;
+    }
+
+    private int getHeight2(Node<Integer> node) {
+        //returns absolute value of height of node. returns Integer.MAX_VALUE if one of the subtrees is unbalanced;
+        if (node == null)
+            return 0;
+        int leftHeight = getHeight2(node.left);
+        int rightHeight = getHeight2(node.right);
+        if (leftHeight == Integer.MAX_VALUE || rightHeight == Integer.MAX_VALUE)
+            return Integer.MAX_VALUE;
+
+        int diff = Math.abs(leftHeight - rightHeight);
+        if (diff > 1)
+            return Integer.MAX_VALUE;
+
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+
+    @Test
+    public void testBinaryTreeIsBST() {
+        Node<Integer> root = new Node<>(10);
+        root.left = new Node<>(5);
+        root.right = new Node<>(20);
+        root.left.left = new Node<>(9);
+        root.left.right = new Node<>(18);
+        root.right.left = new Node<>(3);
+        root.right.right = new Node<>(7);
+        Assert.assertFalse(isBST(root));
+
+        root = new Node<>(2);
+        Node<Integer> node7 = root.left = new Node<>(7);
+        Node<Integer> node5 = root.right = new Node<>(5);
+        node7.left = new Node<>(2);
+        Node<Integer> node6 = node7.right = new Node<>(6);
+        node6.left = new Node<>(5);
+        node6.right = new Node<>(11);
+        Node<Integer> node9 = node5.right = new Node<>(9);
+        node9.left = new Node<>(4);
+        Assert.assertFalse(isBST(root));
+
+        root = new Node<>(10);
+        Node<Integer> node5_2 = root.left = new Node<>(5);
+        Node<Integer> node20 = root.right = new Node<>(20);
+        Node<Integer> node3 = node20.left = new Node<>(3);
+        node20.right = new Node<>(7);
+        node5_2.right = new Node<>(12);
+        node3.left = new Node<>(9);
+        node3.right = new Node<>(18);
+        Assert.assertFalse(isBST(root));
+
+        root = new Node<>(10);
+        root.left = new Node<>(5);
+        root.left.left = new Node<>(3);
+        root.left.right = new Node<>(7);
+        root.right = new Node<>(20);
+        root.right.right = new Node<>(30);
+        Assert.assertTrue(isBST(root));
+
+    }
+
+    private boolean isBST(Node<Integer> root) {
+        return isBSTHelper(root, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Comparable<T>> boolean isBSTHelper(Node<T> node, T lowerBound, T upperBound) {
+        if (node == null)
+            return true;
+        if (node.left == null && node.right == null) {
+            T t = (T) node.data;
+            return t.compareTo(lowerBound) > 0 && t.compareTo(upperBound) < 0;
+        }
+        return isBSTHelper(node.left, lowerBound, (T) node.data) && isBSTHelper(node.right, (T) node.data, upperBound);
+    }
+
+    @Test
+    public void testInorderSuccessorUsingParent() {
+        Node<Integer> root = new Node<>(10);
+        root.addLeftChild(5);
+        root.addRightChild(20);
+        root.left.addLeftChild(9);
+        root.left.addRightChild(18);
+        root.right.addLeftChild(3);
+        root.right.addRightChild(7);
+        validateInorderSuccessor(root);
+
+        root = new Node<>(2);
+        Node<Integer> node7 = root.addLeftChild(7);
+        Node<Integer> node5 = root.addRightChild(5);
+        node7.addLeftChild(2);
+        Node<Integer> node6 = node7.addRightChild(6);
+        node6.addLeftChild(5);
+        node6.addRightChild(11);
+        Node<Integer> node9 = node5.addRightChild(9);
+        node9.addLeftChild(4);
+        validateInorderSuccessor(root);
+
+        root = new Node<>(10);
+        Node<Integer> node5_2 = root.addLeftChild(5);
+        Node<Integer> node20 = root.addRightChild(20);
+        Node<Integer> node3 = node20.addLeftChild(3);
+        node20.addRightChild(7);
+        node5_2.addRightChild(12);
+        node3.addLeftChild(9);
+        node3.addRightChild(18);
+        validateInorderSuccessor(root);
+
+        root = new Node<>(10);
+        root.addLeftChild(5);
+        root.left.addLeftChild(3);
+        root.left.addRightChild(7);
+        root.addRightChild(20);
+        root.right.addRightChild(30);
+        validateInorderSuccessor(root);
+    }
+
+    private void validateInorderSuccessor(Node<Integer> root) {
+        Node<Integer> curr = root;
+        String inorder = inorder(root);
+        while (curr.left != null)
+            curr = curr.left;
+        StringBuilder inorderSuccessorStringBuilder = new StringBuilder();
+        while (curr != null) {
+            inorderSuccessorStringBuilder.append(curr.data);
+            curr = getInorderSuccessor(curr);
+        }
+        Assert.assertEquals(inorder, inorderSuccessorStringBuilder.toString());
+    }
+
+    private <T extends Comparable<T>> Node<T> getInorderSuccessor(Node<T> node) {
+        if (node.right != null || node.parent == null) {
+            Node<T> curr = node.right;
+            if (curr == null)
+                return null;
+            while (curr.left != null)
+                curr = curr.left;
+            return curr;
+        }
+
+        if (isLeftChild(node)) //if left child, return parent
+            return node.parent;
+        //if right child, keep going up until you find a parent that is left child. print it's parent. if such a left child cant be found return null
+        Node<T> curr = node.parent;
+        while (curr != null && !isLeftChild(curr)) {
+            curr = curr.parent;
+        }
+        if (curr == null)
+            return null;
+        return curr.parent;
+    }
+
+    private boolean isLeftChild(Node<?> node) {
+        return node.parent != null && node.parent.left != null && node.parent.left.equals(node);
+    }
+
+    @Test
+    public void testLowestCommonAncestor() {
+        Node<Integer> root = new Node<>(10);
+        root.left = new Node<>(5);
+        root.right = new Node<>(20);
+        root.left.left = new Node<>(9);
+        root.left.right = new Node<>(18);
+        root.right.left = new Node<>(3);
+        root.right.right = new Node<>(7);
+
+        Assert.assertEquals(root.right.data, getLowestCommonAncestor(root, root.right.left, root.right.right).data);
+        Assert.assertEquals(root.data, getLowestCommonAncestor(root, root.left.right, root.right.left).data);
+        Assert.assertEquals(root.data, getLowestCommonAncestor(root, root.left.right, root.right.right).data);
+        Assert.assertEquals(root.left.data, getLowestCommonAncestor(root, root.left.right, root.left.left).data);
+        Assert.assertEquals(root.left.data, getLowestCommonAncestor(root, root.left, root.left.right).data);
+        validateLowestCommonAncestor(root, 10, 9, 7);
+        validateLowestCommonAncestor(root, 10, 20, 5);
+
+        root = new Node<>(2);
+        Node<Integer> node7 = root.left = new Node<>(7);
+        Node<Integer> node5 = root.right = new Node<>(5);
+        node7.left = new Node<>(2);
+        Node<Integer> node6 = node7.right = new Node<>(6);
+        node6.left = new Node<>(8);
+        node6.right = new Node<>(11);
+        Node<Integer> node9 = node5.right = new Node<>(9);
+        node9.left = new Node<>(4);
+        validateLowestCommonAncestor(root, 2, 7, 5);
+        validateLowestCommonAncestor(root, 2, 2, 5);
+        validateLowestCommonAncestor(root, 2, 2, 4);
+
+
+        root = new Node<>(10);
+        Node<Integer> node5_2 = root.left = new Node<>(5);
+        Node<Integer> node20 = root.right = new Node<>(20);
+        Node<Integer> node3 = node20.left = new Node<>(3);
+        node20.right = new Node<>(7);
+        node5_2.right = new Node<>(12);
+        node3.left = new Node<>(9);
+        node3.right = new Node<>(18);
+        validateLowestCommonAncestor(root, 10, 10, 10);
+
+        root = new Node<>(10);
+        root.left = new Node<>(5);
+        root.left.left = new Node<>(3);
+        root.left.right = new Node<>(7);
+        root.right = new Node<>(20);
+        root.right.right = new Node<>(30);
+        validateLowestCommonAncestor(root, 10, 30, 7);
+    }
+
+    private void validateLowestCommonAncestor(Node<Integer> root, int expectedNodeData, int node1Data, int node2Data) {
+        Node<Integer> expectedNode = getNodeWithValue(root, expectedNodeData);
+        Assert.assertNotNull(expectedNode);
+        Node<Integer> node1 = getNodeWithValue(root, node1Data);
+        Assert.assertNotNull(node1);
+        Node<Integer> node2 = getNodeWithValue(root, node2Data);
+        Assert.assertNotNull(node2);
+        Node<Integer> LCA = getLowestCommonAncestor(root, node1, node2);
+        Assert.assertNotNull(LCA);
+        Assert.assertEquals(expectedNode, LCA);
+    }
+
+    private <T> Node<T> getNodeWithValue(Node<T> root, T data) {
+        if (root == null)
+            return null;
+        if (root.data.equals(data))
+            return root;
+        Node<T> lValue = getNodeWithValue(root.left, data);
+        if (lValue != null)
+            return lValue;
+        Node<T> rValue = getNodeWithValue(root.right, data);
+        if (rValue != null)
+            return rValue;
+        return null;
+    }
+
+
+    private <T> Node<T> getLowestCommonAncestor(Node<T> root, Node<T> node1, Node<T> node2) {
+        if (node1.equals(node2))
+            return node2;
+        AncestorDTO<T> dto = new AncestorDTO<>();
+        LCAHelper2(root, node1, node2, dto);
+        return dto.lowestAncestor;
+    }
+
+    private <T> void LCAHelper(Node<T> node, Node<T> node1, Node<T> node2, AncestorDTO<T> dto) {
+        int beforeCount = dto.foundCount;
+        if (node.left != null) {
+            LCAHelper(node.left, node1, node2, dto);
+        }
+        if (dto.lowestAncestor != null)
+            return;
+
+        if (node.equals(node1) || node.equals(node2)) {
+            dto.foundCount++;
+        }
+
+        if (node.right != null) {
+            LCAHelper(node.right, node1, node2, dto);
+        }
+        int afterCount = dto.foundCount;
+        if (beforeCount == 0 && afterCount == 2 && dto.lowestAncestor == null)
+            dto.lowestAncestor = node;
+
+
+    }
+
+    private <T> void LCAHelper2(Node<T> node, Node<T> node1, Node<T> node2, AncestorDTO<T> dto) {
+        int beforeCount = dto.foundCount;
+        if (node.left != null) {
+            LCAHelper(node.left, node1, node2, dto);
+        }
+
+        if (node.right != null) {
+            LCAHelper(node.right, node1, node2, dto);
+        }
+
+        if (dto.lowestAncestor != null)
+            return;
+
+        if (node.equals(node1) || node.equals(node2)) {
+            dto.foundCount++;
+        }
+
+        int afterCount = dto.foundCount;
+        if (beforeCount == 0 && afterCount == 2 && dto.lowestAncestor == null)
+            dto.lowestAncestor = node;
+
+    }
+
+    private static class AncestorDTO<T> {
+        Node<T> lowestAncestor;
+        int foundCount = 0;
+    }
+
+
+    @Test
+    public void testPathSum() {
+        Node<Integer> root = new Node<>(10);
+        root.right = new Node<>(-3);
+        root.right.right = new Node<>(11);
+        Node<Integer> node5 = root.left = new Node<>(5);
+        node5.right = new Node<>(2);
+        node5.right.right = new Node<>(1);
+        node5.left = new Node<>(3);
+        node5.left.left = new Node<>(3);
+        node5.left.right = new Node<>(-2);
+
+        List<Stack<Node<Integer>>> paths = getPaths(root, 8);
+//        System.out.println(paths.size());
+//        paths.stream().map(s->
+//            s.stream().map(n->n.data.toString()).collect(Collectors.joining("->"))
+//        ).forEach(System.out::println);
+        Assert.assertEquals(3, paths.size()); //O(N^2) time and O(1) space
+
+        Assert.assertEquals(3, getPathCount(root, 8)); //O(N) time and O(logN) space
+
+    }
+
+    private int getPathCount(Node<Integer> root, int sum) {
+
+        return getPathCount(root, sum, 0, new HashMap<>()); //O(N) time and O(logN) space
+    }
+
+    private int getPathCount(Node<Integer> node, int targetSum, int runningSum, Map<Integer, Integer> map) {
+        if (node == null)
+            return 0;
+
+        runningSum += (int) node.data;
+
+        int totalPaths = map.getOrDefault(runningSum - targetSum, 0); //count paths that start after root and end here
+
+        //Check if there is path from root to this node
+        if (runningSum == targetSum)
+            totalPaths++;
+        modifyMap(map, runningSum, 1);
+        totalPaths += getPathCount(node.left, targetSum, runningSum, map);
+        totalPaths += getPathCount(node.right, targetSum, runningSum, map);
+        modifyMap(map, runningSum, -1);
+        return totalPaths;
+
+
+    }
+
+    private void modifyMap(Map<Integer, Integer> map, int key, int delta) {
+        int newValue = map.getOrDefault(key, 0) + delta;
+        if (newValue == 0)
+            map.remove(key);
+        else
+            map.put(key, newValue);
+    }
+
+
+    private List<Stack<Node<Integer>>> getPaths(Node<Integer> root, int sum) {
+        List<PathDTO<Integer>> paths = new ArrayList<>();
+        getPaths(root, sum, sum, paths);
+        return paths.stream().filter(p -> p.sum == sum).map(p -> p.path).collect(Collectors.toList());
+    }
+
+    private <T> boolean isChild(Node<T> parent, Node<T> child) {
+        return parent != null && child != null && ((parent.left != null && parent.left.equals(child)) || (parent.right != null && parent.right.equals(child)));
+    }
+
+    private static int callCounter = 0;
+
+    private void getPaths(Node<Integer> node, int sum, int actualSum, List<PathDTO<Integer>> paths) {
+        callCounter++;
+        if (node == null)
+            return;
+        getPaths(node.left, actualSum, actualSum, paths);
+        getPaths(node.left, sum - (int) node.data, actualSum, paths);
+        getPaths(node.right, actualSum, actualSum, paths);
+        getPaths(node.right, sum - (int) node.data, actualSum, paths);
+
+        paths.stream()
+                .filter(path -> !path.isComplete)
+                .filter(path -> isChild(node, path.path.peek()))
+                .forEach(path -> {
+                    path.sum += (int) node.data;
+                    path.isComplete = (path.sum == actualSum);
+                    path.path.push(node);
+                });
+
+        if (node.data.equals(actualSum)) {
+            Stack<Node<Integer>> stack = new Stack<>();
+            stack.push(node);
+            paths.add(new PathDTO<>(stack, true, (int) node.data));
+        }
+        if (node.data.equals(sum)) {
+            Stack<Node<Integer>> stack = new Stack<>();
+            stack.push(node);
+            paths.add(new PathDTO<>(stack, false, (int) node.data));
+        }
+
+
+    }
+
+    private static class PathDTO<T> {
+        Stack<Node<T>> path;
+        boolean isComplete;
+        int sum = Integer.MAX_VALUE;
+
+        public PathDTO(Stack<Node<T>> path, boolean isComplete, int sum) {
+            this.path = path;
+            this.isComplete = isComplete;
+            this.sum = sum;
+        }
+    }
+
+
 }
