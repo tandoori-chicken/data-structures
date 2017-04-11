@@ -8,7 +8,7 @@ public abstract class TestUtils {
     private TestUtils() {
     }
 
-    public static String stringify(int[] array) {
+    public static <T> String stringify(T[] array) {
         return StringUtils.join(array, ',');
     }
 
