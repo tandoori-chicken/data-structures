@@ -22,10 +22,20 @@ public abstract class TestUtils {
         int prev = array[0];
         for (int i = 1; i < array.length; i++) {
             int curr = array[i];
-            Assert.assertTrue(prev < curr);
+            Assert.assertTrue(prev <= curr);
             prev = curr;
         }
 
     }
 
+    public static void assertSorted(double[] array) {
+        Assert.assertNotNull("Array is null", array);
+        Assert.assertNotEquals("Array is empty", 0, array.length);
+        double prev = array[0];
+        for (int i = 1; i < array.length; i++) {
+            double curr = array[i];
+            Assert.assertTrue(prev <= curr);
+            prev = curr;
+        }
+    }
 }

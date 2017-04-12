@@ -31,9 +31,8 @@ public class MergeSorter extends Sorter {
             }
         }
 
-        while(helperLeft<=mid)
-        {
-            array[current++]=helper[helperLeft++];
+        while (helperLeft <= mid) {
+            array[current++] = helper[helperLeft++];
         }
 
     }
