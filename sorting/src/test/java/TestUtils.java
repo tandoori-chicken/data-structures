@@ -12,6 +12,10 @@ public abstract class TestUtils {
         return StringUtils.join(array, ',');
     }
 
+    public static String stringify(int[] array) {
+        return StringUtils.join(array, ',');
+    }
+
     public static void assertSorted(int... array) {
         Assert.assertNotNull("Array is null", array);
         Assert.assertNotEquals("Array is empty", 0, array.length);
