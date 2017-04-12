@@ -210,5 +210,49 @@ public class SortingProblemsTest {
         return -1;
     }
 
+    /**
+     * You are given an array-like data structure Listy which lacks a size method.
+     * It does, however, have an elementAt(i) method that returns the element at index i in 0(1) time.
+     * If i is beyond the bounds of the data structure, it returns -1. (For this reason, the data structure only supports positive integers.)
+     * Given a Listy which contains sorted, positive integers, find the index at which an element x occurs.
+     * If x occurs multiple times, you may return any index.
+     */
+    @Test
+    public void testBlackBoxSearch()
+    {
+Listy listy = new Listy(4,5,5,5,5,5,5,5,5,6,7,8,9,10,56,208,415);
+
+        Assert.assertEquals(9,getListyIndex(listy,6));
+        Assert.assertEquals(0,getListyIndex(listy,4));
+        Assert.assertEquals(16,getListyIndex(listy,415));
+        Assert.assertEquals(-1,getListyIndex(listy,405));
+        int fiveIndex = getListyIndex(listy,5);
+        Assert.assertTrue(fiveIndex>=1&&fiveIndex<=8);
+    }
+
+    private int getListyIndex(Listy listy, int key) {
+        int low=0,high=Integer.MAX_VALUE;
+        return getListyIndex(listy,low,high,key);
+    }
+
+    private int getListyIndex(Listy listy, int low, int high, int key) {
+
+        if(low<=high)
+        {
+            int mid = (low+high)/2;
+            if(listy.elementAt(mid)==key)
+                return mid;
+            if(listy.elementAt(mid)==-1||key<listy.elementAt(mid))
+            {
+                return getListyIndex(listy,low,mid-1,key);
+            }
+            else
+            {
+                return getListyIndex(listy,mid+1,high,key);
+            }
+        }
+        return -1;
+    }
+
 
 }
